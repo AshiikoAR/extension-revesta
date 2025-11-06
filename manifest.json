@@ -1,12 +1,25 @@
 {
   "manifest_version": 3,
-  "name": "Hello World Extension",
+  "name": "RénoAides - Assistant Immobilier",
   "version": "1.0.0",
-  "description": "A simple Hello World extension for Chromium browsers",
+  "description": "Trouvez toutes les aides immobilières disponibles pour votre achat ou rénovation directement sur les annonces",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage",
+    "webRequest"
   ],
+  "host_permissions": [
+    "https://*.leboncoin.fr/*",
+    "https://*.seloger.com/*",
+    "https://*.bienici.com/*",
+    "https://mesaidesreno.gouv.fr/*",
+    "https://simulation.maprimerenov.gouv.fr/*",
+    "https://api.geo.gouv.fr/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -14,14 +27,44 @@
       "48": "images/icon-48.png",
       "128": "images/icon-128.png"
     },
-    "default_title": "Hello World Extension"
+    "default_title": "RénoAides - Assistant Immobilier"
   },
   "icons": {
     "16": "images/icon-16.png",
     "48": "images/icon-48.png",
     "128": "images/icon-128.png"
   },
-  "background": {
-    "service_worker": "background.js"
-  }
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.leboncoin.fr/ventes_immobilieres/*",
+        "https://www.leboncoin.fr/ad/ventes_immobilieres/*"
+      ],
+      "js": ["content-scripts/leboncoin.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://www.seloger.com/annonces/*",
+        "https://www.seloger.com/annonce/*"
+      ],
+      "js": ["content-scripts/seloger.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://www.bienici.com/annonce/*",
+        "https://www.bienici.com/annonces/*"
+      ],
+      "js": ["content-scripts/bienici.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["js/injected.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

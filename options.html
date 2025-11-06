@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RénoAides - Paramètres</title>
+    <link rel="stylesheet" href="styles/options.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 RénoAides - Paramètres</h1>
+            <p>Configurez votre profil pour des recommandations personnalisées</p>
+        </div>
+
+        <form id="optionsForm" class="options-form">
+            <!-- Section Profil Utilisateur -->
+            <section class="form-section">
+                <h2>👤 Profil Utilisateur</h2>
+                
+                <div class="form-group">
+                    <label for="codePostal">Code postal *</label>
+                    <input type="text" id="codePostal" placeholder="75001" maxlength="5" pattern="[0-9]{5}" required>
+                    <small>Votre code postal pour les aides régionales</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="revenus">Revenus annuels du ménage</label>
+                    <input type="number" id="revenus" placeholder="50000" min="0">
+                    <small>En euros (optionnel, pour calculer l'éligibilité)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombrePersonnes">Nombre de personnes dans le ménage</label>
+                    <input type="number" id="nombrePersonnes" placeholder="2" min="1" value="1">
+                    <small>Affects some eligibility criteria</small>
+                </div>
+            </section>
+
+            <!-- Section Propriété -->
+            <section class="form-section">
+                <h2>🏘️ Type de Projet</h2>
+                
+                <div class="form-group">
+                    <label for="typeProjet">Type de projet</label>
+                    <select id="typeProjet">
+                        <option value="achat">Achat d'une propriété</option>
+                        <option value="renovation">Rénovation d'une propriété existante</option>
+                        <option value="entretien">Entretien/Maintenance</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="typeLogement">Type de logement ciblé</label>
+                    <select id="typeLogement">
+                        <option value="maison">Maison</option>
+                        <option value="appartement">Appartement</option>
+                        <option value="indifferent">Indifférent</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Travaux prioritaires</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="travaux" value="isolation"> Isolation</label>
+                        <label><input type="checkbox" name="travaux" value="chauffage"> Chauffage</label>
+                        <label><input type="checkbox" name="travaux" value="menuiserie"> Menuiseries</label>
+                        <label><input type="checkbox" name="travaux" value="renovation"> Rénovation générale</label>
+                        <label><input type="checkbox" name="travaux" value="energie"> Énergies renouvelables</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Notifications -->
+            <section class="form-section">
+                <h2>🔔 Notifications</h2>
+                
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="notificationsAides" checked>
+                    <label for="notificationsAides">M'avertir quand une nouvelle aide est disponible</label>
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="notificationsPrix" checked>
+                    <label for="notificationsPrix">M'avertir si le prix dépasse mon budget estimé</label>
+                </div>
+            </section>
+
+            <!-- Section Confidentialité -->
+            <section class="form-section">
+                <h2>🔒 Confidentialité & Données</h2>
+                
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="acceptAnalytics" checked>
+                    <label for="acceptAnalytics">Autoriser l'analyse anonyme d'usage</label>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" id="deleteData" class="btn-danger">🗑️ Supprimer mes données</button>
+                    <small>Supprime définitivement vos données stockées</small>
+                </div>
+            </section>
+
+            <!-- Boutons d'action -->
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">💾 Enregistrer les paramètres</button>
+                <button type="reset" class="btn-secondary">↺ Réinitialiser</button>
+            </div>
+
+            <!-- Message de confirmation -->
+            <div id="saveMessage" class="message hidden success">
+                ✅ Vos paramètres ont été enregistrés avec succès !
+            </div>
+        </form>
+
+        <!-- Section Info -->
+        <div class="info-section">
+            <h3>ℹ️ À propos</h3>
+            <p>RénoAides v1.0.0</p>
+            <p>
+                <a href="https://mesaidesreno.gouv.fr/" target="_blank">Mes Aides Rénov'</a> • 
+                <a href="https://www.maprimerenov.gouv.fr/" target="_blank">MaPrimeRénov'</a> • 
+                <a href="https://www.france-reno.gouv.fr/" target="_blank">France Rénov'</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

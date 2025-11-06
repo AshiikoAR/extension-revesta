@@ -1,0 +1,29 @@
+{
+  "name": "extension-revesta",
+  "version": "1.0.0",
+  "description": "RénoAides - Extension Chromium pour trouver les aides immobilières",
+  "author": "AshiikoAR",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AshiikoAR/extension-revesta.git"
+  },
+  "scripts": {
+    "dev": "echo 'Développement en cours...' && echo 'Rechargez l\\'extension dans chrome://extensions/'",
+    "test": "echo 'Tests à implémenter'",
+    "build": "echo 'Build à implémenter'",
+    "lint": "echo 'Linter à implémenter'"
+  },
+  "keywords": [
+    "extension",
+    "chromium",
+    "immobilier",
+    "aides",
+    "rénovation",
+    "france",
+    "leboncoin",
+    "seloger",
+    "bienici"
+  ],
+  "devDependencies": {}
+}

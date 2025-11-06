@@ -1,26 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World Extension</title>
+    <title>RénoAides - Assistant Immobilier</title>
     <link rel="stylesheet" href="styles/popup.css">
 </head>
 <body>
     <div class="container">
-        <h1>Hello World! 👋</h1>
-        <p>Welcome to your Chromium extension.</p>
-        
-        <div class="content">
-            <p id="message">Click the button below to see a message:</p>
-            <button id="greetButton">Show Greeting</button>
+        <div class="header">
+            <h1>🏠 RénoAides</h1>
+            <p>Assistant Immobilier</p>
         </div>
-        
-        <div class="info">
-            <p>Current URL: <span id="currentUrl">Loading...</span></p>
+
+        <!-- État de chargement -->
+        <div id="loading" class="section hidden">
+            <div class="spinner"></div>
+            <p>Analyse de la propriété en cours...</p>
+        </div>
+
+        <!-- Section principales aides -->
+        <div id="results" class="section hidden">
+            <div class="property-info">
+                <h3 id="propertyTitle">-</h3>
+                <p><strong>Prix:</strong> <span id="propertyPrice">-</span> €</p>
+                <p><strong>Localisation:</strong> <span id="propertyLocation">-</span></p>
+                <p><strong>Type:</strong> <span id="propertyType">-</span></p>
+            </div>
+
+            <!-- Estimation des aides -->
+            <div class="aids-estimate">
+                <div class="estimate-box">
+                    <h4>💰 Montant estimé des aides</h4>
+                    <p class="big-number"><span id="aidAmount">0</span> €</p>
+                    <p class="small-text">Soit <span id="aidPercent">0</span>% de la propriété</p>
+                </div>
+            </div>
+
+            <!-- Liste des aides -->
+            <div class="aids-list">
+                <h4>📋 Aides disponibles</h4>
+                <div id="aidesList" class="aids-container"></div>
+            </div>
+
+            <!-- Liens utiles -->
+            <div class="useful-links">
+                <h4>🔗 Ressources</h4>
+                <ul id="linksList"></ul>
+            </div>
+        </div>
+
+        <!-- Message d'erreur -->
+        <div id="error" class="section hidden error-box">
+            <p id="errorMessage">-</p>
+        </div>
+
+        <!-- État vide -->
+        <div id="empty" class="section">
+            <div class="empty-state">
+                <p>👀 Visitez une annonce immobilière sur LeBonCoin, SeLoger ou BienIci pour découvrir les aides disponibles.</p>
+                <button id="openOptions">⚙️ Configurer mon profil</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <a href="#" id="openSettings">Paramètres</a>
+            <a href="https://mesaidesreno.gouv.fr/" target="_blank">En savoir plus</a>
         </div>
     </div>
-    
+
     <script src="popup.js"></script>
 </body>
 </html>
