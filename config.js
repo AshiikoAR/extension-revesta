@@ -4,7 +4,7 @@
 
 const CONFIG = {
   // Informations de l'extension
-  EXTENSION_NAME: 'RénoAides',
+  EXTENSION_NAME: 'REVESTA - Assistant Immobilier',
   VERSION: '1.0.0',
   
   // Durée de cache (en millisecondes)
@@ -16,10 +16,7 @@ const CONFIG = {
 
   // URLs des APIs
   APIS: {
-    MES_AIDES_RENO: 'https://mesaidesreno.beta.gouv.fr/api/v1',
-    MAPRIME_RENOV: 'https://api.gouv.fr/api/v1/mesaides',
-    GEO: 'https://api.geo.gouv.fr',
-    ANAH: 'https://www.anah.fr/api'
+    MES_AIDES_RENO: 'https://mesaidesreno.beta.gouv.fr/api/v1'
   },
 
   // Tokens d'authentification
@@ -34,30 +31,15 @@ const CONFIG = {
       domain: 'leboncoin.fr',
       pattern: /https:\/\/(www\.)?leboncoin\.fr\/ventes_immobilieres\/.*/,
       scriptFile: 'content-scripts/leboncoin.js'
-    },
-    {
-      name: 'SeLoger',
-      domain: 'seloger.com',
-      pattern: /https:\/\/(www\.)?seloger\.com\/annonces\/.*/,
-      scriptFile: 'content-scripts/seloger.js'
-    },
-    {
-      name: 'BienIci',
-      domain: 'bienici.com',
-      pattern: /https:\/\/(www\.)?bienici\.com\/annonce\/.*/,
-      scriptFile: 'content-scripts/bienici.js'
     }
   ],
 
-  // Types d'aides
+  // Types d'aides (Mes Aides Réno)
   AIDE_TYPES: {
     MAPRIMERENOV: 'MaPrimeRénov\'',
-    MES_AIDES_RENO: 'Mes Aides Rénov\'',
-    PTZ: 'Prêt à Taux Zéro',
     ECO_PTZ: 'Éco-PTZ',
-    AIDE_REGION: 'Aide régionale',
-    AIDE_LOCALE: 'Aide locale',
-    CEE: 'Certificats d\'Économies d\'Énergie'
+    CEE: 'Certificats d\'Économies d\'Énergie',
+    DENORMANDIE: 'Dispositif Denormandie'
   },
 
   // Types de travaux

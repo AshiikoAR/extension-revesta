@@ -1,226 +1,152 @@
 /**
  * Service Worker - Backend de l'extension
- * Gère les appels API, le scraping et la logique
+ * Gère les appels API Mes Aides Réno uniquement
  */
 
-// Importer la configuration (Note: en Manifest v3, on peut aussi utiliser importScripts)
-// Pour l'instant, on utilise directement le token ici
+// Token API Mes Aides Réno (à demander via contact@mesaidesreno.fr)
 const API_TOKEN_MES_AIDES_RENO = 'lyZLuv25wCwJkpJtWYwlMuT2XO4U2XSU';
 
-// Cache des API avec TTL
-const API_CACHE = {
-  DUREE_TTL: 24 * 60 * 60 * 1000, // 24h
-};
+// API endpoint
+const API_BASE_URL = 'https://mesaidesreno.beta.gouv.fr/api/v1';
 
 /**
- * Extraire les informations clés d'une annonce
+ * Convertir code postal en code INSEE via l'API geo.gouv.fr
+ * @param {string} codePostal - Le code postal
+ * @param {string} ville - Le nom de la ville (optionnel, pour matcher la bonne commune)
  */
-async function extractPropertyInfo(tabId, url) {
+async function getCodeInsee(codePostal, ville = null) {
   try {
-    const [result] = await chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      function: () => {
-        // Sera exécuté dans le contexte du content script
-        return window.propertyData || null;
-      }
-    });
+    console.log('🗺️ Recherche code INSEE pour:', codePostal, ville ? `(${ville})` : '');
+    const response = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=code,nom,codesPostaux`);
     
-    return result?.result || null;
+    if (!response.ok) {
+      throw new Error(`API Geo erreur ${response.status}`);
+    }
+    
+    const communes = await response.json();
+    
+    if (!communes || communes.length === 0) {
+      throw new Error(`Code postal ${codePostal} introuvable`);
+    }
+    
+    // Si le nom de la ville est fourni, chercher la correspondance exacte
+    if (ville) {
+      const villeNormalized = ville.toLowerCase().trim();
+      const communeMatch = communes.find(c => 
+        c.nom.toLowerCase() === villeNormalized ||
+        c.nom.toLowerCase().includes(villeNormalized) ||
+        villeNormalized.includes(c.nom.toLowerCase())
+      );
+      
+      if (communeMatch) {
+        console.log(`✅ Code INSEE trouvé (match ville): ${communeMatch.code} (${communeMatch.nom})`);
+        return communeMatch.code;
+      } else {
+        console.warn(`⚠️ Ville "${ville}" non trouvée dans les ${communes.length} communes. Communes disponibles:`, communes.map(c => c.nom).join(', '));
+      }
+    }
+    
+    // Si plusieurs communes ont ce code postal, prendre la première
+    const commune = communes[0];
+    console.log(`✅ Code INSEE trouvé (première commune): ${commune.code} (${commune.nom})`);
+    
+    return commune.code;
   } catch (error) {
-    console.error('Erreur extraction propriété:', error);
-    return null;
+    console.error('❌ Erreur conversion code postal:', error);
+    throw new Error(`Impossible de trouver le code INSEE pour ${codePostal}`);
   }
 }
 
 /**
- * Appeler l'API Mes Aides Rénov'
+ * Appeler l'API Mes Aides Réno - Endpoint eligibilite
  */
 async function fetchMesAidesReno(propertyData) {
   try {
-    console.log('📡 Appel API Mes Aides Rénov pour', propertyData.codePostal);
+    console.log('📡 Appel API Mes Aides Réno (eligibilite) pour', propertyData.codePostal, propertyData.ville || '');
     
-    // Paramètres de la requête
-    const params = new URLSearchParams({
-      code_postal: propertyData.codePostal || '',
-      type_travaux: propertyData.typeWork || 'renovation',
-      budget: propertyData.prix || 0,
-      revenus: propertyData.revenus || 0,
-      api_key: API_TOKEN_MES_AIDES_RENO
+    // Charger les préférences utilisateur
+    const userConfig = await new Promise(resolve => {
+      chrome.storage.sync.get(['userConfig'], (result) => {
+        resolve(result.userConfig || {});
+      });
     });
-
+    
+    const codePostal = propertyData.codePostal || userConfig.codePostal || '44109';
+    const ville = propertyData.ville || '';
+    
+    // Convertir le code postal en code INSEE (avec le nom de la ville si disponible)
+    const codeInsee = await getCodeInsee(codePostal, ville);
+    console.log('🏘️ Utilisation code INSEE:', codeInsee);
+    
+    // Récupérer les paramètres utilisateur avec valeurs par défaut
+    const statut = userConfig.statut === 'bailleur' ? 'bailleur' : 'propriétaire';
+    const typeLogement = propertyData.typeLogement === 'appartement' ? 'appartement' : 'maison';
+    const travaux = userConfig.budgetTravaux || propertyData.prix || 50000;
+    const revenus = userConfig.revenus || 25000;
+    const personnes = userConfig.nombrePersonnes || 3;
+    const dpeActuel = userConfig.dpeActuel || 6;
+    const dpeVise = userConfig.dpeVise || 2;
+    const residencePrincipale = userConfig.residencePrincipale === 'oui' ? 'oui' : 'non';
+    const periodeConstruction = userConfig.periodeConstruction || 'au moins 15 ans';
+    const surface = userConfig.surfaceLogement || propertyData.surface || null;
+    const prixAchat = propertyData.prix || userConfig.budgetAchat || null;
+    const taxeFonciere = userConfig.taxeFonciere || null;
+    const conditionDepenses = userConfig.conditionDepenses !== false ? 'oui' : 'non';
+    
+    // Construire l'URL exactement comme dans l'exemple qui fonctionne
+    // En utilisant le format exact de l'API doc avec GUILLEMETS DOUBLES
+    const params = {
+      'vous.propriétaire.statut': statut,
+      'ménage.personnes': personnes.toString(),
+      'ménage.revenu': revenus.toString(),
+      'DPE.actuel': dpeActuel.toString(),
+      'projet.DPE visé': dpeVise.toString(),
+      'projet.travaux': travaux.toString(),
+      'logement.type': `"${typeLogement}"`,
+      'logement.commune': `"${codeInsee}"`,
+      'logement.propriétaire occupant': residencePrincipale,
+      'logement.résidence principale propriétaire': residencePrincipale,
+      'logement.période de construction': `"${periodeConstruction}"`,
+      'taxe foncière.condition de dépenses': conditionDepenses,
+      'fields': 'eligibilite'
+    };
+    
+    // Ajouter les paramètres optionnels seulement s'ils sont définis
+    if (surface) {
+      params['logement.surface'] = surface.toString();
+    }
+    if (prixAchat) {
+      params['logement.prix d\'achat'] = prixAchat.toString();
+    }
+    if (taxeFonciere) {
+      params['logement.taxe foncière'] = taxeFonciere.toString();
+    }
+    
+    // Construire manuellement la query string
+    const queryString = Object.entries(params)
+      .map(([key, value]) => {
+        // Encoder la clé
+        const encodedKey = encodeURIComponent(key);
+        // Encoder la valeur
+        const encodedValue = encodeURIComponent(value);
+        return `${encodedKey}=${encodedValue}`;
+      })
+      .join('&');
+    
+    const url = `${API_BASE_URL}?${queryString}`;
+    
     console.log('🔑 Token API utilisé:', API_TOKEN_MES_AIDES_RENO.substring(0, 8) + '...');
+    console.log('🔗 URL complète:', url);
+    console.log('📦 Query string:', queryString);
     
-    // Ajouter timeout pour éviter les longs hangs
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    
-    const response = await fetch(
-      `https://mesaidesreno.gouv.fr/api/aides?${params}`,
-      {
-        method: 'GET',
-        signal: controller.signal,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_TOKEN_MES_AIDES_RENO}`,
-          'User-Agent': 'RénoAides-Extension/1.0'
-        }
-      }
-    );
-
-    clearTimeout(timeout);
-    console.log('📊 Réponse API:', response.status, response.statusText);
-
-    if (!response.ok) {
-      console.warn('⚠️ API Mes Aides Rénov retourna:', response.status);
-      
-      // Si 401, token invalide
-      if (response.status === 401) {
-        console.error('❌ Token API invalide ou expiré');
-      }
-      // Si 429, limite dépassée
-      if (response.status === 429) {
-        console.warn('⚠️ Limite d\'appels API atteinte');
-      }
-      
-      // Retourner données de fallback
-      return getFallbackAides(propertyData);
-    }
-    
-    const aides = await response.json();
-    console.log('✅ Aides récupérées:', aides.length, 'aides');
-    
-    return cacheResult('mesaidesreno', propertyData.codePostal, aides);
-  } catch (error) {
-    console.error('❌ Erreur Mes Aides Rénov:', error.name, error.message);
-    console.log('⚠️ Utilisation des données de fallback');
-    return getFallbackAides(propertyData);
-  }
-}
-
-/**
- * Données de fallback intelligentes basées sur le code postal
- */
-function getFallbackAides(propertyData) {
-  const codePostal = propertyData.codePostal || '';
-  
-  // Base d'aides standard disponibles partout
-  const aidesBase = [
-    {
-      nom: 'MaPrimeRénov\'',
-      montantEstime: 5000,
-      description: 'Aide pour améliorer la performance énergétique',
-      lien: 'https://www.maprimerenov.gouv.fr/',
-      source: 'fallback'
-    },
-    {
-      nom: 'Éco-PTZ',
-      montantEstime: 15000,
-      description: 'Prêt à taux zéro pour travaux de rénovation énergétique',
-      lien: 'https://www.ecoptiz.gouv.fr/',
-      source: 'fallback'
-    },
-    {
-      nom: 'MaPrimeRénov Sérénité',
-      montantEstime: 8000,
-      description: 'Aide pour bouquet de travaux en rénovation complète',
-      lien: 'https://www.maprimerenov.gouv.fr/',
-      source: 'fallback'
-    }
-  ];
-
-  // Aides régionales (exemple: Pays de la Loire pour 49xxx)
-  if (codePostal.startsWith('49')) {
-    aidesBase.push({
-      nom: 'Aide Région Pays de la Loire',
-      montantEstime: 3000,
-      description: 'Aide régionale pour rénovation thermique',
-      lien: 'https://www.paysdelaloire.fr/',
-      source: 'fallback-region'
+    // Afficher chaque paramètre pour debug
+    console.log('📋 Paramètres détaillés:');
+    Object.entries(params).forEach(([key, value]) => {
+      console.log(`  ${key} = ${value}`);
     });
-  }
-  
-  // Aides locales (exemple: Angers pour 49100)
-  if (codePostal === '49100') {
-    aidesBase.push({
-      nom: 'Aide Commune Angers',
-      montantEstime: 2000,
-      description: 'Subvention locale pour amélioration de l\'habitat',
-      lien: 'https://www.angers.fr/',
-      source: 'fallback-local'
-    });
-  }
-
-  console.log('💡 Utilisation de', aidesBase.length, 'aides de fallback');
-  return aidesBase;
-}
-
-/**
- * Appeler MaPrimeRénov' via l'API gouvernementale
- */
-async function fetchMaprimeRenov(propertyData) {
-  try {
-    console.log('📡 Appel API MaPrimeRénov pour', propertyData.codePostal);
     
-    const params = new URLSearchParams({
-      code_postal: propertyData.codePostal || '',
-      revenus: propertyData.revenus || 0,
-      type_travaux: propertyData.typeWork || 'renovation'
-    });
-
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    
-    const response = await fetch(
-      `https://www.maprimerenov.gouv.fr/api/aides?${params}`,
-      {
-        method: 'GET',
-        signal: controller.signal,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'User-Agent': 'RénoAides-Extension/1.0'
-        }
-      }
-    );
-
-    clearTimeout(timeout);
-    console.log('📊 Réponse API MaPrimeRénov:', response.status);
-
-    if (!response.ok) {
-      console.warn('⚠️ API MaPrimeRénov retourna:', response.status);
-      return [];
-    }
-    
-    const data = await response.json();
-    console.log('✅ Données MaPrimeRénov reçues:', data.length, 'aides');
-    
-    return cacheResult('maprimerenov', propertyData.codePostal, data);
-  } catch (error) {
-    console.error('❌ Erreur MaPrimeRénov:', error.name, error.message);
-    return [];
-  }
-}
-
-/**
- * Récupérer les informations géographiques via l'API Géo
- */
-async function fetchGeoInfo(codePostal) {
-  try {
-    console.log('📡 Récupération info géo pour', codePostal);
-    
-    // Validation du code postal
-    if (!codePostal || codePostal.length < 5) {
-      console.warn('⚠️ Code postal invalide:', codePostal);
-      return getGeoFallback(codePostal);
-    }
-    
-    // Ajouter timeout
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    
-    const url = `https://api.geo.gouv.fr/communes?codePostal=${encodeURIComponent(codePostal)}&limit=1`;
-    console.log('🔗 URL API Géo:', url);
+    const timeout = setTimeout(() => controller.abort(), 10000);
     
     const response = await fetch(url, {
       method: 'GET',
@@ -232,83 +158,112 @@ async function fetchGeoInfo(codePostal) {
     });
 
     clearTimeout(timeout);
-    console.log('📊 Réponse API Géo:', response.status, response.statusText);
+    console.log('📊 Réponse API:', response.status, response.statusText);
 
     if (!response.ok) {
-      console.warn('⚠️ API Géo retourna status:', response.status);
-      return getGeoFallback(codePostal);
+      const errorText = await response.text();
+      console.error('❌ API Mes Aides Réno retourna:', response.status);
+      console.error('📄 Réponse complète:', errorText);
+      
+      // Erreur spécifique pour les codes postaux non supportés
+      if (errorText.includes('Unexpected end of JSON input')) {
+        throw new Error(`Code INSEE ${codeInsee} (${codePostal}) non reconnu par l'API. Certaines communes ne sont pas encore supportées par Mes Aides Réno.`);
+      }
+      
+      throw new Error(`API error ${response.status}: ${errorText}`);
     }
     
     const data = await response.json();
-    console.log('📦 Données API Géo reçues');
+    console.log('✅ Données API reçues:', data);
+    console.log('📋 Nombre d\'aides retournées:', Array.isArray(data) ? data.length : 0);
     
-    const commune = data.communes?.[0];
+    // Parser les aides depuis la réponse
+    const aides = parseEligibiliteResponse(data, propertyData);
+    console.log('✅ Aides éligibles:', aides.length, 'aides');
     
-    if (!commune) {
-      console.warn('⚠️ Aucune commune trouvée pour', codePostal);
-      return getGeoFallback(codePostal);
-    }
-    
-    console.log('✅ Commune trouvée:', commune.nom);
-    return {
-      ...commune,
-      source: 'api'
-    };
+    return aides;
   } catch (error) {
-    console.error('❌ Erreur API Géo:', error.name, error.message);
-    console.log('⚠️ Utilisation du fallback géographique');
-    return getGeoFallback(codePostal);
+    console.error('❌ Erreur Mes Aides Réno:', error.name, error.message);
+    throw error;
   }
 }
 
 /**
- * Données géographiques de fallback
+ * Parser la réponse de l'endpoint eligibilite
  */
-function getGeoFallback(codePostal) {
-  // Mappings simples pour les grandes villes
-  const mappings = {
-    '75001': { nom: 'Paris 1er', region: 'Île-de-France' },
-    '75002': { nom: 'Paris 2e', region: 'Île-de-France' },
-    '69001': { nom: 'Lyon 1er', region: 'Auvergne-Rhône-Alpes' },
-    '13001': { nom: 'Marseille 1er', region: 'Provence-Alpes-Côte d\'Azur' },
-    '49100': { nom: 'Angers', region: 'Pays de la Loire' },
-    '49000': { nom: 'Angers', region: 'Pays de la Loire' },
-  };
-
-  const fallback = mappings[codePostal] || {
-    nom: 'Localisation inconnue',
-    region: 'Région inconnue'
-  };
-
-  return {
-    ...fallback,
-    codePostal: codePostal,
-    source: 'fallback'
-  };
+function parseEligibiliteResponse(data, propertyData) {
+  const aides = [];
+  
+  if (!Array.isArray(data)) {
+    console.warn('⚠️ Réponse API non-array:', data);
+    return aides;
+  }
+  
+  // Filtrer uniquement les aides éligibles (status === true)
+  const aidesEligibles = data.filter(aide => aide.status === true);
+  
+  console.log(`📊 ${aidesEligibles.length} aides éligibles sur ${data.length} au total`);
+  
+  aidesEligibles.forEach(aide => {
+    // Extraire le montant
+    let montant = 0;
+    if (typeof aide.rawValue === 'number') {
+      montant = aide.rawValue;
+    } else if (aide.rawValue === true && aide.value) {
+      // Pour les aides sans montant précis (éligibilité booléenne)
+      // Extraire le montant du champ "value" si possible
+      const match = aide.value.match(/(\d[\d\s]*)/);
+      if (match) {
+        montant = parseInt(match[1].replace(/\s/g, ''));
+      }
+    }
+    
+    // Construire l'objet aide
+    const aideObj = {
+      nom: aide.label,
+      montantEstime: montant,
+      description: aide.type === 'prêt' 
+        ? `${aide.type.charAt(0).toUpperCase() + aide.type.slice(1)} - ${aide.value}`
+        : aide.value,
+      lien: 'https://mesaidesreno.beta.gouv.fr/',
+      source: 'api',
+      type: aide.type
+    };
+    
+    // Ajouter les détails pour les prêts
+    if (aide.type === 'prêt' && (aide.taux || aide.durée)) {
+      aideObj.details = [];
+      if (aide.taux) aideObj.details.push(`Taux: ${aide.taux}`);
+      if (aide.durée) aideObj.details.push(`Durée: ${aide.durée}`);
+      aideObj.details = aideObj.details.join(' • ');
+    }
+    
+    aides.push(aideObj);
+  });
+  
+  // Trier par montant décroissant
+  aides.sort((a, b) => b.montantEstime - a.montantEstime);
+  
+  console.log('✅ Aides parsées:', aides);
+  return aides;
 }
+
+
 
 /**
  * Analyser les aides disponibles
  */
 async function analyzeAids(propertyData) {
-  const [geoInfo, aidesReno, maprimeRenov] = await Promise.all([
-    fetchGeoInfo(propertyData.codePostal),
-    fetchMesAidesReno(propertyData),
-    fetchMaprimeRenov(propertyData)
-  ]);
+  const aides = await fetchMesAidesReno(propertyData);
 
   return {
-    region: geoInfo?.region,
-    commune: geoInfo?.nom,
-    aides: [
-      ...aidesReno,
-      ...maprimeRenov
-    ],
-    estimationAide: calculateEstimatedAid(propertyData, aidesReno, maprimeRenov),
+    commune: propertyData.localisation || 'Non renseignée',
+    codePostal: propertyData.codePostal,
+    aides: aides,
+    estimationAide: calculateEstimatedAid(aides),
     links: {
-      mesAidesReno: 'https://mesaidesreno.gouv.fr/',
-      maprimeRenov: 'https://www.maprimerenov.gouv.fr/',
-      france2reno: 'https://www.france-reno.gouv.fr/'
+      mesAidesReno: 'https://mesaidesreno.beta.gouv.fr/',
+      franceRenov: 'https://france-renov.gouv.fr/'
     }
   };
 }
@@ -316,54 +271,17 @@ async function analyzeAids(propertyData) {
 /**
  * Estimer le montant total des aides
  */
-function calculateEstimatedAid(propertyData, aidesReno, maprimeRenov) {
+function calculateEstimatedAid(aides) {
   let total = 0;
   
-  // Calculer estimation basée sur les aides disponibles
-  aidesReno.forEach(aide => {
-    total += aide.montantEstime || 0;
-  });
-  
-  maprimeRenov.forEach(aide => {
+  aides.forEach(aide => {
     total += aide.montantEstime || 0;
   });
 
   return {
     montantTotal: total,
-    estimationBudgetTotal: propertyData.prix ? propertyData.prix + total : total,
-    estimationAideEnPourcent: propertyData.prix ? Math.round((total / propertyData.prix) * 100) : 0
+    nombreAides: aides.length
   };
-}
-
-/**
- * Mettre en cache les résultats
- */
-function cacheResult(source, key, data) {
-  const cacheKey = `cache_${source}_${key}`;
-  chrome.storage.local.set({
-    [cacheKey]: {
-      data,
-      timestamp: Date.now()
-    }
-  });
-  return data;
-}
-
-/**
- * Récupérer depuis le cache si valide
- */
-async function getCachedResult(source, key) {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(`cache_${source}_${key}`, (result) => {
-      const cached = result[`cache_${source}_${key}`];
-      
-      if (cached && (Date.now() - cached.timestamp) < API_CACHE.DUREE_TTL) {
-        resolve(cached.data);
-      } else {
-        resolve(null);
-      }
-    });
-  });
 }
 
 /**
@@ -380,14 +298,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ success: false, error: error.message });
       });
     
-    // Indiquer qu'on répondra de manière asynchrone
-    return true;
+    return true; // Réponse asynchrone
   }
 
   if (request.type === 'GET_USER_CONFIG') {
     chrome.storage.sync.get(['userConfig'], (result) => {
       sendResponse(result.userConfig || {});
     });
+    return true;
+  }
+  
+  if (request.type === 'OPEN_POPUP') {
+    // Ouvrir le popup de l'extension
+    chrome.action.openPopup()
+      .then(() => {
+        console.log('✅ Popup ouvert');
+        sendResponse({ success: true });
+      })
+      .catch((error) => {
+        console.error('❌ Erreur ouverture popup:', error);
+        // Fallback: l'utilisateur devra cliquer sur l'icône de l'extension
+        sendResponse({ success: false, error: error.message });
+      });
     return true;
   }
 

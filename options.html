@@ -3,125 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RénoAides - Paramètres</title>
+    <title>REVESTA - Paramètres</title>
     <link rel="stylesheet" href="styles/options.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏠 RénoAides - Paramètres</h1>
-            <p>Configurez votre profil pour des recommandations personnalisées</p>
+            <a href="https://www.revesta.fr" target="_blank" rel="noopener" title="revesta.fr">
+                <img src="images/Revesta_LogoTextuel-Blanc.png" alt="REVESTA Logo" class="logo">
+            </a>
+            <p>Renseignez vos informations pour obtenir des résultats personnalisés.</p>
         </div>
 
         <form id="optionsForm" class="options-form">
             <!-- Section Profil Utilisateur -->
             <section class="form-section">
-                <h2>👤 Profil Utilisateur</h2>
+                <h2><i class='bx bxs-user'></i> Mon profil</h2>
+                
+                <div class="form-group">
+                    <label for="statut">Futur statut *</label>
+                    <select id="statut" required>
+                        <option value="propriétaire" selected>Propriétaire occupant</option>
+                        <option value="bailleur">Propriétaire bailleur</option>
+                    </select>
+                    <small>Propriétaire occupant = Vous habiterez le logement | Bailleur = Vous le louerez.</small>
+                </div>
                 
                 <div class="form-group">
                     <label for="codePostal">Code postal *</label>
                     <input type="text" id="codePostal" placeholder="75001" maxlength="5" pattern="[0-9]{5}" required>
-                    <small>Votre code postal pour les aides régionales</small>
+                    <small>Code postal de votre zone de recherche (aides locales & régionales).</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="revenus">Revenus annuels du ménage</label>
-                    <input type="number" id="revenus" placeholder="50000" min="0">
-                    <small>En euros (optionnel, pour calculer l'éligibilité)</small>
+                    <label for="revenus">Revenus annuels du ménage *</label>
+                    <input type="number" id="revenus" placeholder="25000" min="0" value="25000" required>
+                    <small>Revenus fiscaux de référence en euros (€) du foyer.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="nombrePersonnes">Nombre de personnes dans le ménage</label>
-                    <input type="number" id="nombrePersonnes" placeholder="2" min="1" value="1">
-                    <small>Affects some eligibility criteria</small>
+                    <label for="nombrePersonnes">Nombre de personnes dans le ménage *</label>
+                    <input type="number" id="nombrePersonnes" placeholder="2" min="1" value="3" required>
+                    <small>Nombre de personnes composant le foyer.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="residencePrincipale">Résidence principale</label>
+                    <select id="residencePrincipale">
+                        <option value="oui" selected>Oui - Ce sera ma résidence principale</option>
+                        <option value="non">Non - Résidence secondaire ou locative</option>
+                    </select>
+                    <small>Impacte l'éligibilité à certaines aides.</small>
                 </div>
             </section>
 
-            <!-- Section Propriété -->
+            <!-- Section Énergie -->
             <section class="form-section">
-                <h2>🏘️ Type de Projet</h2>
+                <h2><i class='bx bxs-bar-chart-alt-2'></i> Performance énergétique visées</h2>
                 
                 <div class="form-group">
-                    <label for="typeProjet">Type de projet</label>
-                    <select id="typeProjet">
-                        <option value="achat">Achat d'une propriété</option>
-                        <option value="renovation">Rénovation d'une propriété existante</option>
-                        <option value="entretien">Entretien/Maintenance</option>
+                    <label for="dpeActuel">DPE actuel (valeur par défaut)</label>
+                    <select id="dpeActuel">
+                        <option value="1">A - Excellent</option>
+                        <option value="2">B - Très bon</option>
+                        <option value="3">C - Bon</option>
+                        <option value="4">D - Moyen</option>
+                        <option value="5">E - Passable</option>
+                        <option value="6" selected>F - Médiocre (passoire thermique)</option>
+                        <option value="7">G - Mauvais (passoire thermique)</option>
                     </select>
+                    <small>DPE utilisé, si non-renseigné dans l'annonce.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="typeLogement">Type de logement ciblé</label>
+                    <label for="dpeVise">DPE visé après travaux</label>
+                    <select id="dpeVise">
+                        <option value="1">A - Excellent</option>
+                        <option value="2" selected>B - Très bon</option>
+                        <option value="3">C - Bon</option>
+                        <option value="4">D - Moyen</option>
+                        <option value="5">E - Passable</option>
+                    </select>
+                    <small>Objectif de performance après rénovation.</small>
+                </div>
+            </section>
+
+            <!-- Section Projet d'achat -->
+            <section class="form-section">
+                <h2><i class='bx bxs-bank'></i> Mon projet d'achat / de rénovation</h2>
+                
+                <div class="form-group">
+                    <label for="budgetAchat">Budget maximum d'achat</label>
+                    <input type="number" id="budgetAchat" placeholder="200000" min="0" step="1000">
+                    <small>En euros (optionnel, pour filtrer les annonces).</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="surfaceLogement">Surface du logement recherché</label>
+                    <input type="number" id="surfaceLogement" placeholder="80" min="0" step="1">
+                    <small>Surface en m², si non-renseigné dans l'annonce.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="periodeConstruction">Période de construction du bien</label>
+                    <select id="periodeConstruction">
+                        <option value="au moins 15 ans" selected>Plus de 15 ans (éligible à toutes les aides)</option>
+                        <option value="moins de 15 ans">Moins de 15 ans</option>
+                        <option value="moins de 2 ans">Moins de 2 ans (neuf ou récent)</option>
+                    </select>
+                    <small>Certaines aides peuvent exiger un bien de plus de 15 ans.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="typeLogement">Type de bien recherché</label>
                     <select id="typeLogement">
-                        <option value="maison">Maison</option>
-                        <option value="appartement">Appartement</option>
+                        <option value="maison">Maison à rénover</option>
+                        <option value="appartement">Appartement à rénover</option>
                         <option value="indifferent">Indifférent</option>
                     </select>
+                    <small>Type de logement pour affiner les aides proposées.</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Travaux prioritaires</label>
+                    <label for="budgetTravaux">Budget travaux estimé</label>
+                    <input type="number" id="budgetTravaux" placeholder="50000" min="0" step="1000">
+                    <small>En euros (utilisé pour calculer les aides).</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="taxeFonciere">Taxe foncière annuelle (si connue)</label>
+                    <input type="number" id="taxeFonciere" placeholder="1200" min="0" step="1">
+                    <small>En euros (afin de calculer l'exonération de taxe foncière).</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gainEnergetique">Gain énergétique visé</label>
+                    <select id="gainEnergetique">
+                        <option value="">Non défini</option>
+                        <option value="2" selected>Au moins 2 classes DPE (recommandé)</option>
+                        <option value="3">Au moins 3 classes DPE</option>
+                        <option value="4">Au moins 4 classes DPE (rénovation performante)</option>
+                    </select>
+                    <small>Le gain minimal demandé pour le parcours accompagné</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Travaux de rénovation envisagés</label>
                     <div class="checkbox-group">
-                        <label><input type="checkbox" name="travaux" value="isolation"> Isolation</label>
-                        <label><input type="checkbox" name="travaux" value="chauffage"> Chauffage</label>
-                        <label><input type="checkbox" name="travaux" value="menuiserie"> Menuiseries</label>
-                        <label><input type="checkbox" name="travaux" value="renovation"> Rénovation générale</label>
+                        <label><input type="checkbox" name="travaux" value="isolation" checked> Isolation thermique</label>
+                        <label><input type="checkbox" name="travaux" value="chauffage" checked> Système de chauffage</label>
+                        <label><input type="checkbox" name="travaux" value="menuiserie"> Menuiseries (fenêtres/portes)</label>
+                        <label><input type="checkbox" name="travaux" value="renovation" checked> Rénovation énergétique globale</label>
                         <label><input type="checkbox" name="travaux" value="energie"> Énergies renouvelables</label>
                     </div>
+                    <small>Types de travaux que vous envisagez de réaliser.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="parcoursAide">Parcours d'aide MaPrimeRénov'</label>
+                    <select id="parcoursAide">
+                        <option value="">À déterminer</option>
+                        <option value="accompagné" selected>Parcours accompagné (rénovation d'ampleur)</option>
+                        <option value="par geste">Parcours par geste (travaux isolés)</option>
+                        <option value="copropriété">Copropriété</option>
+                    </select>
+                    <small>Le parcours accompagné est <u>obligatoire</u> pour les passoires thermiques (DPE F et G).</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Conditions spécifiques</label>
+                    <div class="checkbox-group2">
+                        <label><input type="checkbox" id="conditionDepenses" checked> Je prévois des dépenses ≥ 5 000€ (condition exonération taxe foncière)</label>
+                    </div>
+                    <small>Cochez si vous prévoyez des travaux importants.</small>
                 </div>
             </section>
 
             <!-- Section Notifications -->
             <section class="form-section">
-                <h2>🔔 Notifications</h2>
+                <h2><i class='bx bxs-bell'></i> Mes notifications</h2>
                 
-                <div class="form-group checkbox">
-                    <input type="checkbox" id="notificationsAides" checked>
-                    <label for="notificationsAides">M'avertir quand une nouvelle aide est disponible</label>
-                </div>
-
-                <div class="form-group checkbox">
-                    <input type="checkbox" id="notificationsPrix" checked>
-                    <label for="notificationsPrix">M'avertir si le prix dépasse mon budget estimé</label>
+                <div class="form-group">
+                    <div class="checkbox-group2">
+                        <label><input type="checkbox" id="notificationsAides" checked> Afficher automatiquement les aides sur chaque annonce</label>
+                        <label><input type="checkbox" id="notificationsPrix" checked> Calculer le prix total (achat + travaux) avec les aides déduites</label>
+                    </div>
+                    <small>Activez ou désactivez les notifications selon vos préférences.</small>
                 </div>
             </section>
 
             <!-- Section Confidentialité -->
             <section class="form-section">
-                <h2>🔒 Confidentialité & Données</h2>
+                <h2><i class='bx bxs-cookie'></i> Confidentialité & Données</h2>
                 
-                <div class="form-group checkbox">
-                    <input type="checkbox" id="acceptAnalytics" checked>
-                    <label for="acceptAnalytics">Autoriser l'analyse anonyme d'usage</label>
-                </div>
-
                 <div class="form-group">
-                    <button type="button" id="deleteData" class="btn-danger">🗑️ Supprimer mes données</button>
-                    <small>Supprime définitivement vos données stockées</small>
+                    <div class="checkbox-group2">
+                        <label><input type="checkbox" id="acceptAnalytics" checked>
+                        Autoriser l'analyse anonyme d'usage</label>
+                    </div>
+                    <small>Aide-nous à améliorer l'extension en partageant des données anonymes.</small>
+                </div>
+                <div class="form-group">
+                    <button type="button" id="deleteData" class="btn-danger">Supprimer mes données</button>
                 </div>
             </section>
 
             <!-- Boutons d'action -->
             <div class="form-actions">
-                <button type="submit" class="btn-primary">💾 Enregistrer les paramètres</button>
-                <button type="reset" class="btn-secondary">↺ Réinitialiser</button>
+                <button type="submit" class="btn-primary">Enregistrer mes paramètres</button>
+                <button type="reset" class="btn-secondary">Réinitialiser</button>
             </div>
 
             <!-- Message de confirmation -->
             <div id="saveMessage" class="message hidden success">
-                ✅ Vos paramètres ont été enregistrés avec succès !
+                Vos paramètres ont été enregistrés avec succès !
             </div>
         </form>
 
         <!-- Section Info -->
         <div class="info-section">
-            <h3>ℹ️ À propos</h3>
-            <p>RénoAides v1.0.0</p>
-            <p>
-                <a href="https://mesaidesreno.gouv.fr/" target="_blank">Mes Aides Rénov'</a> • 
-                <a href="https://www.maprimerenov.gouv.fr/" target="_blank">MaPrimeRénov'</a> • 
-                <a href="https://www.france-reno.gouv.fr/" target="_blank">France Rénov'</a>
-            </p>
+            <h3>À PROPOS</h3>
+            <p>REVESTA&copy; v1.0.0 &bull; Extension créée et élevée en France ! &#x1F1EB;&#x1F1F7; &bull; Circa 2025</p>
         </div>
     </div>
 

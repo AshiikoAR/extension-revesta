@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_2" data-name="Calque 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108.05 108.05">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #9cc41b;
+      }
+
+      .cls-3 {
+        fill: #0f1a13;
+      }
+    </style>
+  </defs>
+  <g id="BarrePicyo">
+    <g>
+      <circle class="cls-1" cx="54.02" cy="54.02" r="54.02"/>
+      <g>
+        <g>
+          <circle class="cls-2" cx="73.84" cy="77.38" r="6.41"/>
+          <circle class="cls-2" cx="34.21" cy="30.66" r="6.41"/>
+        </g>
+        <path class="cls-3" d="M64.14,28.54h-8.67c1.18,5.22.1,11.33-2.86,18.52l-5.35,12.15c-3.45,7.98-4.53,14.68-3.35,20.3h8.67c-1.18-5.22-.1-11.33,2.86-18.52l5.35-12.15c3.45-7.98,4.53-14.68,3.35-20.3Z"/>
+      </g>
+    </g>
+  </g>
+</svg>

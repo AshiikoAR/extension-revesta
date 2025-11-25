@@ -18,11 +18,22 @@ async function loadOptions() {
             const config = result.userConfig || {};
 
             // Remplir le formulaire
+            document.getElementById('statut').value = config.statut || 'propriétaire';
             document.getElementById('codePostal').value = config.codePostal || '';
-            document.getElementById('revenus').value = config.revenus || '';
-            document.getElementById('nombrePersonnes').value = config.nombrePersonnes || '1';
-            document.getElementById('typeProjet').value = config.typeProjet || 'achat';
+            document.getElementById('revenus').value = config.revenus || '25000';
+            document.getElementById('nombrePersonnes').value = config.nombrePersonnes || '3';
+            document.getElementById('residencePrincipale').value = config.residencePrincipale || 'oui';
+            document.getElementById('dpeActuel').value = config.dpeActuel || '6';
+            document.getElementById('dpeVise').value = config.dpeVise || '2';
+            document.getElementById('budgetAchat').value = config.budgetAchat || '';
+            document.getElementById('surfaceLogement').value = config.surfaceLogement || '';
+            document.getElementById('periodeConstruction').value = config.periodeConstruction || 'au moins 15 ans';
+            document.getElementById('budgetTravaux').value = config.budgetTravaux || '';
+            document.getElementById('taxeFonciere').value = config.taxeFonciere || '';
+            document.getElementById('gainEnergetique').value = config.gainEnergetique || '2';
             document.getElementById('typeLogement').value = config.typeLogement || 'maison';
+            document.getElementById('parcoursAide').value = config.parcoursAide || 'accompagné';
+            document.getElementById('conditionDepenses').checked = config.conditionDepenses !== false;
             document.getElementById('notificationsAides').checked = config.notificationsAides !== false;
             document.getElementById('notificationsPrix').checked = config.notificationsPrix !== false;
             document.getElementById('acceptAnalytics').checked = config.acceptAnalytics !== false;
@@ -51,11 +62,22 @@ form.addEventListener('submit', (e) => {
     const travaux = Array.from(travauxCheckboxes).map(cb => cb.value);
 
     const config = {
+        statut: document.getElementById('statut').value,
         codePostal: document.getElementById('codePostal').value,
-        revenus: parseInt(document.getElementById('revenus').value) || 0,
-        nombrePersonnes: parseInt(document.getElementById('nombrePersonnes').value) || 1,
-        typeProjet: document.getElementById('typeProjet').value,
+        revenus: parseInt(document.getElementById('revenus').value) || 25000,
+        nombrePersonnes: parseInt(document.getElementById('nombrePersonnes').value) || 3,
+        residencePrincipale: document.getElementById('residencePrincipale').value,
+        dpeActuel: parseInt(document.getElementById('dpeActuel').value) || 6,
+        dpeVise: parseInt(document.getElementById('dpeVise').value) || 2,
+        budgetAchat: parseInt(document.getElementById('budgetAchat').value) || null,
+        surfaceLogement: parseInt(document.getElementById('surfaceLogement').value) || null,
+        periodeConstruction: document.getElementById('periodeConstruction').value,
+        budgetTravaux: parseInt(document.getElementById('budgetTravaux').value) || null,
+        taxeFonciere: parseInt(document.getElementById('taxeFonciere').value) || null,
+        gainEnergetique: document.getElementById('gainEnergetique').value,
         typeLogement: document.getElementById('typeLogement').value,
+        parcoursAide: document.getElementById('parcoursAide').value,
+        conditionDepenses: document.getElementById('conditionDepenses').checked,
         travaux: travaux,
         notificationsAides: document.getElementById('notificationsAides').checked,
         notificationsPrix: document.getElementById('notificationsPrix').checked,

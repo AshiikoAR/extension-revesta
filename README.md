@@ -1,13 +1,13 @@
 # 🏠 RénoAides - Extension Immobilière Intelligente
 
-Une extension Chromium qui aide les acheteurs et rénovateurs à découvrir **toutes les aides financières auxquelles ils ont droit** directement depuis les annonces immobilières (LeBonCoin, SeLoger, BienIci, etc.).
+Une extension Chromium qui aide les acheteurs et rénovateurs à découvrir **toutes les aides financières auxquelles ils ont droit** directement depuis les annonces immobilières (LeBonCoin).
 
 ## 📋 Fonctionnalités principales
 
 ✅ **Scraping automatique** des annonces immobilières  
 ✅ **Calcul des aides disponibles** via les APIs officielles de l'État  
 ✅ **Estimation du budget** après aides  
-✅ **Support multi-sites** (LeBonCoin, SeLoger, BienIci)  
+✅ **Support ciblé sur LeBonCoin**  
 ✅ **Stockage local** des données utilisateur  
 ✅ **Notifications intelligentes** quand des aides deviennent disponibles  
 
@@ -54,9 +54,7 @@ extension-revesta/
 ├── options.html & options.js       # Page de paramètres
 │
 ├── content-scripts/                 # Scripts injectés dans les pages
-│   ├── leboncoin.js                # Parseur LeBonCoin
-│   ├── seloger.js                  # Parseur SeLoger
-│   └── bienici.js                  # Parseur BienIci
+│   └── leboncoin.js                # Parseur LeBonCoin
 │
 ├── styles/
 │   ├── popup.css                   # Styles du popup
@@ -219,8 +217,8 @@ window.propertyData = {
 
 ## � Dépannage
 
-### Le bouton n'apparaît pas
-- ✓ Vérifiez que vous êtes sur LeBonCoin/SeLoger/BienIci
+- ### Le bouton n'apparaît pas
+- ✓ Vérifiez que vous êtes sur LeBonCoin
 - ✓ Rechargez la page
 - ✓ Rechargez l'extension (F5 sur la page des extensions)
 

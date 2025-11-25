@@ -19,6 +19,47 @@
             <p>Analyse de la propriété en cours...</p>
         </div>
 
+        <!-- Section analyse du bien -->
+        <div id="analysis" class="section hidden">
+            <div class="property-info">
+                <h3 id="analysisTitle">-</h3>
+                <p><strong>Prix:</strong> <span id="analysisPrice">-</span> €</p>
+                <p><strong>Localisation:</strong> <span id="analysisLocation">-</span></p>
+                <p><strong>Type:</strong> <span id="analysisType">-</span></p>
+                <p><strong>Surface:</strong> <span id="analysisSurface">-</span> m²</p>
+            </div>
+            
+            <!-- Récapitulatif de l'analyse -->
+            <div class="analysis-summary">
+                <h4>📈 Analyse du bien</h4>
+                <div class="analysis-item">
+                    <span class="analysis-label">📍 Commune:</span>
+                    <span id="analysisCommune" class="analysis-value">-</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">⚡ DPE estimé:</span>
+                    <span id="analysisDPE" class="analysis-value">-</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">🛠️ Budget travaux:</span>
+                    <span id="analysisBudgetTravaux" class="analysis-value">-</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">🏡 Statut:</span>
+                    <span id="analysisStatut" class="analysis-value">-</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">👥 Ménage:</span>
+                    <span id="analysisMenage" class="analysis-value">-</span>
+                </div>
+            </div>
+            
+            <div class="empty-state">
+                <button id="calculateAidsButton" class="btn-analyze">💰 Calculer les aides disponibles</button>
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">Lance le calcul avec l'API Mes Aides Réno</p>
+            </div>
+        </div>
+
         <!-- Section principales aides -->
         <div id="results" class="section hidden">
             <div class="property-info">
@@ -58,8 +99,23 @@
         <!-- État vide -->
         <div id="empty" class="section">
             <div class="empty-state">
-                <p>👀 Visitez une annonce immobilière sur LeBonCoin, SeLoger ou BienIci pour découvrir les aides disponibles.</p>
+                <p>👀 Visitez une annonce immobilière sur LeBonCoin pour découvrir les aides disponibles.</p>
                 <button id="openOptions">⚙️ Configurer mon profil</button>
+            </div>
+        </div>
+        
+        <!-- Section avec données de la propriété détectées -->
+        <div id="propertyDetected" class="section hidden">
+            <div class="property-info">
+                <h3 id="detectedTitle">-</h3>
+                <p><strong>Prix:</strong> <span id="detectedPrice">-</span> €</p>
+                <p><strong>Localisation:</strong> <span id="detectedLocation">-</span></p>
+                <p><strong>Type:</strong> <span id="detectedType">-</span></p>
+            </div>
+            
+            <div class="empty-state">
+                <button id="analyzeButton" class="btn-analyze">📊 Analyser les aides disponibles</button>
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">Cliquez pour calculer les aides selon votre profil</p>
             </div>
         </div>
 
