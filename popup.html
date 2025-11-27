@@ -1,93 +1,135 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" style="border-radius: 12px; overflow: hidden;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RénoAides - Assistant Immobilier</title>
+    <title>REVESTA - Assistant Immobilier</title>
     <link rel="stylesheet" href="styles/popup.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏠 RénoAides</h1>
-            <p>Assistant Immobilier</p>
+            <img src="images/Revesta_LogoTextuel-Blanc.png" alt="REVESTA Logo" class="logo">
+            <div class="header-links">
+                <a href="#" id="openSettings" title="Paramètres">
+                    <i class='bx bxs-cog' ></i>
+                </a>
+                <a href="https://www.revesta.fr" target="_blank" rel="noopener" title="Site officiel REVESTA">
+                    <i class='bx bx-dots-vertical-rounded'></i>
+                </a>
+            </div>
         </div>
 
         <!-- État de chargement -->
         <div id="loading" class="section hidden">
             <div class="spinner"></div>
-            <p>Analyse de la propriété en cours...</p>
+            <p>Analyse du bien en cours...</p>
         </div>
 
         <!-- Section analyse du bien -->
         <div id="analysis" class="section hidden">
             <div class="property-info">
-                <h3 id="analysisTitle">-</h3>
-                <p><strong>Prix:</strong> <span id="analysisPrice">-</span> €</p>
-                <p><strong>Localisation:</strong> <span id="analysisLocation">-</span></p>
-                <p><strong>Type:</strong> <span id="analysisType">-</span></p>
-                <p><strong>Surface:</strong> <span id="analysisSurface">-</span> m²</p>
+                <h3><span id="analysisPrice" title="Prix d'achat du bien">-</span> €</h3>
+                <p>
+                    <span id="analysisTitle">-</span> &bull; <span id="analysisPricePerM2">-</span> €/m²
+                </p>
             </div>
             
             <!-- Récapitulatif de l'analyse -->
             <div class="analysis-summary">
-                <h4>📈 Analyse du bien</h4>
-                <div class="analysis-item">
-                    <span class="analysis-label">📍 Commune:</span>
-                    <span id="analysisCommune" class="analysis-value">-</span>
+                <div class="analysis-details">
+                    <h4>&#x1F4C8;&ensp;Analyse du bien</h4>
+                    <div class="analysis-item">
+                        <span class="analysis-label">&#x1F4CD;&ensp;Commune</span>
+                        <span id="analysisCommune" class="analysis-value">-</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">&#x1F3E2;&ensp;Type</span>
+                        <span id="analysisSummaryType" class="analysis-value">-</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">&#x1F4D0;&ensp;Surface</span>
+                        <span id="analysisSummarySurface" class="analysis-value">-</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">&#x26A1;&ensp;DPE actuel → idéal</span>
+                        <span id="analysisDPE" class="analysis-value">-</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">&#x1F6E0;&ensp;Mon budget travaux</span>
+                        <span id="analysisBudgetTravaux" class="analysis-value">-</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">&#x1F3E1;&ensp;Mon futur statut</span>
+                        <span id="analysisStatut" class="analysis-value">-</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">&#x1F46A;&ensp;Mon ménage</span>
+                        <span id="analysisMenage" class="analysis-value">-</span>
+                    </div>
                 </div>
-                <div class="analysis-item">
-                    <span class="analysis-label">⚡ DPE estimé:</span>
-                    <span id="analysisDPE" class="analysis-value">-</span>
+                <div class="footer">
+                    <button id="calculateAidsButton" class="btn-analyze">Calculer mes aides</button>
                 </div>
-                <div class="analysis-item">
-                    <span class="analysis-label">🛠️ Budget travaux:</span>
-                    <span id="analysisBudgetTravaux" class="analysis-value">-</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="analysis-label">🏡 Statut:</span>
-                    <span id="analysisStatut" class="analysis-value">-</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="analysis-label">👥 Ménage:</span>
-                    <span id="analysisMenage" class="analysis-value">-</span>
-                </div>
-            </div>
-            
-            <div class="empty-state">
-                <button id="calculateAidsButton" class="btn-analyze">💰 Calculer les aides disponibles</button>
-                <p style="font-size: 12px; color: #999; margin-top: 10px;">Lance le calcul avec l'API Mes Aides Réno</p>
             </div>
         </div>
 
         <!-- Section principales aides -->
         <div id="results" class="section hidden">
             <div class="property-info">
-                <h3 id="propertyTitle">-</h3>
-                <p><strong>Prix:</strong> <span id="propertyPrice">-</span> €</p>
-                <p><strong>Localisation:</strong> <span id="propertyLocation">-</span></p>
-                <p><strong>Type:</strong> <span id="propertyType">-</span></p>
+                <h3><span id="propertyPrice">-</span> €</h3>
+                <p>
+                    <span id="propertyTitle">-</span> &bull; <span id="propertyPricePerM2">-</span> €/m²
+                </p>
             </div>
 
             <!-- Estimation des aides -->
             <div class="aids-estimate">
                 <div class="estimate-box">
-                    <h4>💰 Montant estimé des aides</h4>
-                    <p class="big-number"><span id="aidAmount">0</span> €</p>
-                    <p class="small-text">Soit <span id="aidPercent">0</span>% de la propriété</p>
+                    <p>&#x1F4B0;&ensp;Aides estimées &bull; Soit <span id="aidPercent">0</span>% du bien !</p>
+                    <h3>- <span id="aidAmount">0</span> €</h3>
                 </div>
             </div>
 
             <!-- Liste des aides -->
             <div class="aids-list">
-                <h4>📋 Aides disponibles</h4>
-                <div id="aidesList" class="aids-container"></div>
+                <div class="aids-details">
+                    <h4>&#x1F3E6;&ensp;Aides disponibles</h4>
+                    <div id="aidesList" class="aids-container"></div>
+                </div>
+                <div class="footer">
+                    <!-- Bouton pour accéder au formulaire email -->
+                    <button id="showEmailFormButton" class="btn-email-action">Récupérer mon compte-rendu</button>
+                </div>
             </div>
+        </div>
 
-            <!-- Liens utiles -->
-            <div class="useful-links">
-                <h4>🔗 Ressources</h4>
-                <ul id="linksList"></ul>
+        <!-- Section formulaire email -->
+        <div id="emailSection" class="section hidden">
+            <div class="email-container">
+                <div class="email-title">
+                    <h3>Mon compte-rendu</h3>
+                    <p>Indiquez vos coordonnées afin de recevoir vos aides.</p>
+                </div>
+                <form id="emailForm" class="email-form">
+                    <div class="form-row">
+                        <input type="text" id="emailNom" placeholder="Nom" required>
+                        <input type="text" id="emailPrenom" placeholder="Prénom" required>
+                    </div>
+                    <input type="email" id="emailAddress" placeholder="Adresse email" required>
+                    <div id="emailMessage" class="email-message hidden">
+                        &#x2705;&ensp;Compte-rendu envoyé à nom.prenom@mail.com
+                    </div>
+                    <div class="footer">
+                        <button id="backToResults" class="btn-back">
+                            <i class='bx bx-arrow-back'></i>&ensp;Retour
+                        </button>
+                        <button type="submit" class="btn-email">
+                            Envoyer&ensp;<i class='bx bxs-send' ></i>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -99,30 +141,11 @@
         <!-- État vide -->
         <div id="empty" class="section">
             <div class="empty-state">
-                <p>👀 Visitez une annonce immobilière sur LeBonCoin pour découvrir les aides disponibles.</p>
-                <button id="openOptions">⚙️ Configurer mon profil</button>
+                <p>Consultez une annonce immo pour révéler les aides auxquelles vous êtes éligible !</p>
+                <div class="footer">
+                    <button id="openOptions" class="btn-config">Configurer mon profil</button>
+                </div>
             </div>
-        </div>
-        
-        <!-- Section avec données de la propriété détectées -->
-        <div id="propertyDetected" class="section hidden">
-            <div class="property-info">
-                <h3 id="detectedTitle">-</h3>
-                <p><strong>Prix:</strong> <span id="detectedPrice">-</span> €</p>
-                <p><strong>Localisation:</strong> <span id="detectedLocation">-</span></p>
-                <p><strong>Type:</strong> <span id="detectedType">-</span></p>
-            </div>
-            
-            <div class="empty-state">
-                <button id="analyzeButton" class="btn-analyze">📊 Analyser les aides disponibles</button>
-                <p style="font-size: 12px; color: #999; margin-top: 10px;">Cliquez pour calculer les aides selon votre profil</p>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <a href="#" id="openSettings">Paramètres</a>
-            <a href="https://mesaidesreno.gouv.fr/" target="_blank">En savoir plus</a>
         </div>
     </div>
 

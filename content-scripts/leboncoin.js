@@ -15,17 +15,21 @@ function extractLeBonCoinData() {
       // Priorité 1: Élément spécifique au titre (le plus fiable)
       const titleElement = document.querySelector('[data-qa-id="adview_title"]');
       if (titleElement) {
-        return titleElement.textContent.trim();
+        let title = titleElement.textContent.trim();
+        // Nettoyer le titre au cas où
+        title = title.replace(/\d+[\s\u00A0]*€.*$/, '').trim(); // Retirer le prix
+        title = title.replace(/\d+[\s\u00A0]*m².*$/, '').trim(); // Retirer la surface
+        return title;
       }
       
       // Priorité 2: h1 (mais peut contenir d'autres infos)
       const h1 = document.querySelector('h1');
       if (h1) {
         let title = h1.textContent.trim();
-        // Retirer le prix s'il est présent (format "XXX €" ou "XXX€")
-        title = title.replace(/\d+\s*€.*$/, '').trim();
+        // Retirer le prix s'il est présent (format "XXX €" ou "XXX€" avec espace insécable possible)
+        title = title.replace(/\d+[\s\u00A0]*€.*$/, '').trim();
         // Retirer les infos de surface si présentes (format "XXX m²")
-        title = title.replace(/\d+\s*m².*$/, '').trim();
+        title = title.replace(/\d+[\s\u00A0]*m².*$/, '').trim();
         return title;
       }
       
@@ -212,6 +216,59 @@ function extractLeBonCoinData() {
       return '';
     };
 
+    const getDPE = () => {
+      // Méthode 1: Chercher dans data-test-id="energy-criteria" (nouveau format LeBonCoin)
+      const energyCriteria = document.querySelector('[data-test-id="energy-criteria"]');
+      if (energyCriteria) {
+        // Le DPE actif a des classes spécifiques (border, h-sz-24, etc.)
+        const activeDPE = energyCriteria.querySelector('[class*="border-surface"], [class*="h-sz-24"]');
+        if (activeDPE) {
+          const lettre = activeDPE.textContent.trim().toUpperCase();
+          if (/^[A-G]$/.test(lettre)) {
+            const dpeValue = lettre.charCodeAt(0) - 64; // A=1, B=2, etc.
+            console.log(`✅ DPE trouvé (energy-criteria): ${lettre} (${dpeValue})`);
+            return dpeValue;
+          }
+        }
+      }
+      
+      // Méthode 2: Chercher dans les critères de l'annonce
+      const criteriaElements = Array.from(document.querySelectorAll('[data-qa-id*="criteria"]'));
+      for (const el of criteriaElements) {
+        const text = el.textContent.toLowerCase();
+        
+        // Chercher "Classe énergie" ou "DPE"
+        if (text.includes('classe énergie') || text.includes('dpe') || text.includes('diagnostic')) {
+          console.log('🔍 Critère DPE trouvé:', text);
+          
+          // Extraire la lettre (A, B, C, D, E, F, G)
+          const dpeMatch = text.match(/\b([A-G])\b/i);
+          if (dpeMatch) {
+            const lettre = dpeMatch[1].toUpperCase();
+            const dpeValue = lettre.charCodeAt(0) - 64;
+            console.log(`✅ DPE trouvé (critères): ${lettre} (${dpeValue})`);
+            return dpeValue;
+          }
+        }
+      }
+      
+      // Méthode 3: Chercher dans les éléments avec "dpe" dans leur attribut
+      const dpeElements = Array.from(document.querySelectorAll('[class*="dpe"], [class*="DPE"], [alt*="dpe"], [alt*="DPE"]'));
+      for (const el of dpeElements) {
+        const text = (el.textContent || el.alt || '').toLowerCase();
+        const dpeMatch = text.match(/\b([A-G])\b/i);
+        if (dpeMatch) {
+          const lettre = dpeMatch[1].toUpperCase();
+          const dpeValue = lettre.charCodeAt(0) - 64;
+          console.log(`✅ DPE trouvé (élément): ${lettre} (${dpeValue})`);
+          return dpeValue;
+        }
+      }
+      
+      console.log('ℹ️ DPE non trouvé sur la page');
+      return null;
+    };
+
     const data = {
       site: 'leboncoin',
       titre: getTitre(),
@@ -223,6 +280,7 @@ function extractLeBonCoinData() {
       pieces: extractNumber(document.body.textContent, /(\d+)\s*pièces?/i),
       description: document.body.textContent.substring(0, 500), // Premier 500 chars
       typeLogement: extractPropertyType(),
+      dpe: getDPE(),
       etage: extractNumber(document.body.textContent, /(\d+)(?:er|ère|e)?\s*étage/i),
       url: window.location.href,
       dateExtraction: new Date().toISOString()
@@ -360,7 +418,7 @@ function addExtensionButton() {
     color: #fff;
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
     font-size: 1.25em;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.04em;
     padding: 0.5em 1.25em;
     border-radius: 2em;
@@ -369,12 +427,13 @@ function addExtensionButton() {
 
   button.addEventListener('mouseover', () => {
     button.style.backgroundColor = '#a4c520';
-    button.style.transition = 'background-color 0.5s ease;';
+    button.style.transition = 'all 0.5s ease;';
+    button.style.boxShadow = 'rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;';
   });
 
   button.addEventListener('mouseout', () => {
     button.style.backgroundColor = '#0b1c13';
-    button.style.transition = 'background-color 0.5s ease;';
+    button.style.transition = 'all 0.5s ease;';
   });
 
   button.addEventListener('click', () => {

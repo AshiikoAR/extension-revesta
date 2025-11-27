@@ -7,24 +7,17 @@ const dom = {
     results: document.getElementById('results'),
     error: document.getElementById('error'),
     empty: document.getElementById('empty'),
-    propertyDetected: document.getElementById('propertyDetected'),
     analysis: document.getElementById('analysis'),
     
     propertyTitle: document.getElementById('propertyTitle'),
     propertyPrice: document.getElementById('propertyPrice'),
-    propertyLocation: document.getElementById('propertyLocation'),
-    propertyType: document.getElementById('propertyType'),
-    
-    detectedTitle: document.getElementById('detectedTitle'),
-    detectedPrice: document.getElementById('detectedPrice'),
-    detectedLocation: document.getElementById('detectedLocation'),
-    detectedType: document.getElementById('detectedType'),
+    propertyPricePerM2: document.getElementById('propertyPricePerM2'),
     
     analysisTitle: document.getElementById('analysisTitle'),
     analysisPrice: document.getElementById('analysisPrice'),
-    analysisLocation: document.getElementById('analysisLocation'),
-    analysisType: document.getElementById('analysisType'),
-    analysisSurface: document.getElementById('analysisSurface'),
+    analysisPricePerM2: document.getElementById('analysisPricePerM2'),
+    analysisSummaryType: document.getElementById('analysisSummaryType'),
+    analysisSummarySurface: document.getElementById('analysisSummarySurface'),
     analysisCommune: document.getElementById('analysisCommune'),
     analysisDPE: document.getElementById('analysisDPE'),
     analysisBudgetTravaux: document.getElementById('analysisBudgetTravaux'),
@@ -34,12 +27,19 @@ const dom = {
     aidAmount: document.getElementById('aidAmount'),
     aidPercent: document.getElementById('aidPercent'),
     aidesList: document.getElementById('aidesList'),
-    linksList: document.getElementById('linksList'),
+    
+    emailSection: document.getElementById('emailSection'),
+    emailForm: document.getElementById('emailForm'),
+    emailNom: document.getElementById('emailNom'),
+    emailPrenom: document.getElementById('emailPrenom'),
+    emailAddress: document.getElementById('emailAddress'),
+    emailMessage: document.getElementById('emailMessage'),
+    showEmailFormButton: document.getElementById('showEmailFormButton'),
+    backToResults: document.getElementById('backToResults'),
     
     errorMessage: document.getElementById('errorMessage'),
     openOptions: document.getElementById('openOptions'),
     openSettings: document.getElementById('openSettings'),
-    analyzeButton: document.getElementById('analyzeButton'),
     calculateAidsButton: document.getElementById('calculateAidsButton')
 };
 
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (response && response[0] && response[0].result) {
                 currentPropertyData = response[0].result;
                 console.log('✅ Données récupérées via scripting.executeScript:', currentPropertyData);
-                showPropertyDetected();
+                showAnalysis();
                 return;
             } else {
                 console.log('⚠️ scripting.executeScript: Pas de données après 5 tentatives');
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (results && results.propertyData) {
                 currentPropertyData = results.propertyData;
                 console.log('✅ Données récupérées via sendMessage:', currentPropertyData);
-                showPropertyDetected();
+                showAnalysis();
                 return;
             }
         } catch (msgError) {
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (retry && retry.propertyData) {
                     currentPropertyData = retry.propertyData;
                     console.log('✅ Données récupérées après injection:', currentPropertyData);
-                    showPropertyDetected();
+                    showAnalysis();
                     return;
                 }
             } catch (retryError) {
@@ -211,29 +211,6 @@ function isSupportedSite(url) {
 }
 
 /**
- * Afficher les données de la propriété détectées (sans analyser)
- */
-function showPropertyDetected() {
-    // Masquer toutes les sections
-    dom.loading.classList.add('hidden');
-    dom.results.classList.add('hidden');
-    dom.error.classList.add('hidden');
-    dom.empty.classList.add('hidden');
-    dom.analysis.classList.add('hidden');
-    
-    // Afficher la section propertyDetected
-    dom.propertyDetected.classList.remove('hidden');
-    
-    if (!currentPropertyData) return;
-    
-    // Remplir les informations
-    dom.detectedTitle.textContent = currentPropertyData.titre || 'Propriété';
-    dom.detectedPrice.textContent = currentPropertyData.prix?.toLocaleString() || '?';
-    dom.detectedLocation.textContent = currentPropertyData.localisation || currentPropertyData.codePostal || '?';
-    dom.detectedType.textContent = currentPropertyData.typeLogement || '?';
-}
-
-/**
  * Afficher l'analyse complète du bien
  */
 async function showAnalysis() {
@@ -242,7 +219,6 @@ async function showAnalysis() {
     dom.results.classList.add('hidden');
     dom.error.classList.add('hidden');
     dom.empty.classList.add('hidden');
-    dom.propertyDetected.classList.add('hidden');
     
     // Afficher la section analysis
     dom.analysis.classList.remove('hidden');
@@ -259,17 +235,44 @@ async function showAnalysis() {
     // Remplir les informations de base
     dom.analysisTitle.textContent = currentPropertyData.titre || 'Propriété';
     dom.analysisPrice.textContent = currentPropertyData.prix?.toLocaleString() || '?';
-    dom.analysisLocation.textContent = currentPropertyData.localisation || currentPropertyData.codePostal || '?';
-    dom.analysisType.textContent = currentPropertyData.typeLogement || '?';
-    dom.analysisSurface.textContent = currentPropertyData.surface || userConfig.surfaceLogement || '?';
     
-    // Remplir les données d'analyse
-    dom.analysisCommune.textContent = `${currentPropertyData.codePostal || '?'} (converti en code INSEE)`;
+    // Calculer le prix au m²
+    const surface = currentPropertyData.surface || userConfig.surfaceLogement;
+    const prix = currentPropertyData.prix;
+    if (prix && surface) {
+        const prixM2 = Math.round(prix / surface);
+        dom.analysisPricePerM2.textContent = prixM2.toLocaleString();
+    } else {
+        dom.analysisPricePerM2.textContent = '?';
+    }
+    
+    // Remplir les données d'analyse (dans le récapitulatif)
+    const typeLabels = { 'appartement': 'Appartement', 'maison': 'Maison', 'terrain': 'Terrain' };
+    dom.analysisSummaryType.textContent = typeLabels[currentPropertyData.typeLogement] || currentPropertyData.typeLogement || '?';
+    
+    dom.analysisSummarySurface.textContent = surface ? `${surface} m²` : '?';
+    
+    const commune = currentPropertyData.ville 
+        ? `${currentPropertyData.codePostal} - ${currentPropertyData.ville}` 
+        : (currentPropertyData.codePostal || '?');
+    dom.analysisCommune.textContent = commune;
     
     const dpeLabels = { 1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E', 6: 'F', 7: 'G' };
-    const dpeActuel = userConfig.dpeActuel || 6;
+    
+    // Utiliser le DPE de l'annonce si disponible, sinon celui de l'utilisateur
+    const dpeActuel = currentPropertyData.dpe || userConfig.dpeActuel || 6;
     const dpeVise = userConfig.dpeVise || 2;
-    dom.analysisDPE.textContent = `${dpeLabels[dpeActuel]} → ${dpeLabels[dpeVise]}`;
+    
+    // Masquer la ligne DPE si le DPE actuel est déjà A ou B
+    const dpeItem = document.querySelector('.analysis-item:has(#analysisDPE)');
+    if (dpeActuel === 1 || dpeActuel === 2) {
+        if (dpeItem) dpeItem.style.display = 'none';
+    } else {
+        if (dpeItem) dpeItem.style.display = '';
+        // Afficher la source du DPE
+        const dpeSource = currentPropertyData.dpe ? '' : ' (tiré de vos paramètres)';
+        dom.analysisDPE.textContent = `${dpeLabels[dpeActuel]}${dpeSource} → ${dpeLabels[dpeVise]}`;
+    }
     
     dom.analysisBudgetTravaux.textContent = `${(userConfig.budgetTravaux || 50000).toLocaleString()} €`;
     
@@ -329,23 +332,49 @@ function displayResults(data) {
     // Propriété
     dom.propertyTitle.textContent = currentPropertyData.titre;
     dom.propertyPrice.textContent = formatNumber(currentPropertyData.prix);
-    dom.propertyLocation.textContent = currentPropertyData.localisation;
-    dom.propertyType.textContent = getPropertyTypeLabel(currentPropertyData.typeLogement);
+    
+    // Calculer le prix au m²
+    const surface = currentPropertyData.surface;
+    const prix = currentPropertyData.prix;
+    if (prix && surface) {
+        const prixM2 = Math.round(prix / surface);
+        dom.propertyPricePerM2.textContent = prixM2.toLocaleString();
+    } else {
+        dom.propertyPricePerM2.textContent = '?';
+    }
 
-    // Estimation
-    dom.aidAmount.textContent = formatNumber(data.estimationAide.montantTotal);
+    // Estimation avec animation
+    const montantTotal = data.estimationAide.montantTotal;
     const percentEstimate = currentPropertyData.prix 
-        ? Math.round((data.estimationAide.montantTotal / currentPropertyData.prix) * 100)
+        ? Math.round((montantTotal / currentPropertyData.prix) * 100)
         : 0;
-    dom.aidPercent.textContent = percentEstimate;
+    
+    // Animer le montant et le pourcentage
+    animateCounter(dom.aidAmount, 0, montantTotal, 1500, true);
+    animateCounter(dom.aidPercent, 0, percentEstimate, 1500, false);
 
     // Aides
     displayAides(data.aides);
-
-    // Liens
-    displayLinks(data.links);
+    
+    // Pré-remplir les champs email avec les données utilisateur
+    prefillEmailForm();
 
     showSection('results');
+}
+
+/**
+ * Pré-remplir le formulaire email avec les données utilisateur
+ */
+async function prefillEmailForm() {
+    const userConfig = await new Promise(resolve => {
+        chrome.storage.sync.get(['userConfig'], (result) => {
+            resolve(result.userConfig || {});
+        });
+    });
+    
+    if (userConfig.nom) dom.emailNom.value = userConfig.nom;
+    if (userConfig.prenom) dom.emailPrenom.value = userConfig.prenom;
+    if (userConfig.email) dom.emailAddress.value = userConfig.email;
 }
 
 /**
@@ -355,36 +384,19 @@ function displayAides(aides) {
     dom.aidesList.innerHTML = '';
 
     if (!aides || aides.length === 0) {
-        dom.aidesList.innerHTML = '<p style="color: #999; text-align: center;">Aucune aide trouvée pour cette propriété.</p>';
+        dom.aidesList.innerHTML = '<p>Aucune aide trouvée pour cette propriété.</p>';
         return;
     }
 
     aides.forEach(aide => {
         const aidElement = document.createElement('div');
-        aidElement.className = 'aid-item';
+        aidElement.className = 'aide-item';
         aidElement.innerHTML = `
-            <h5>${aide.nom || 'Aide'}</h5>
-            <p>${aide.description || ''}</p>
-            ${aide.montantEstime ? `<p class="aid-amount">Jusqu'à ${formatNumber(aide.montantEstime)} €</p>` : ''}
-            ${aide.conditions ? `<p><small>Conditions: ${aide.conditions}</small></p>` : ''}
+            <h5 title="Max ${aide.description || ''}.">${aide.nom || 'Aide'}</h5>
+            ${aide.montantEstime ? `<p>Jusqu'à ${formatNumber(aide.montantEstime)} €</p>` : ''}
         `;
         dom.aidesList.appendChild(aidElement);
     });
-}
-
-/**
- * Afficher les liens utiles
- */
-function displayLinks(links) {
-    dom.linksList.innerHTML = '';
-
-    if (links) {
-        Object.entries(links).forEach(([key, url]) => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="${url}" target="_blank">${getLinkLabel(key)} ↗</a>`;
-            dom.linksList.appendChild(li);
-        });
-    }
 }
 
 /**
@@ -395,8 +407,8 @@ function showSection(section) {
     dom.results.classList.add('hidden');
     dom.error.classList.add('hidden');
     dom.empty.classList.add('hidden');
-    dom.propertyDetected.classList.add('hidden');
     dom.analysis.classList.add('hidden');
+    dom.emailSection.classList.add('hidden');
 
     const element = dom[section];
     if (element) {
@@ -440,14 +452,33 @@ function getPropertyTypeLabel(type) {
 }
 
 /**
- * Label des liens
+ * Animer un compteur numérique
  */
-function getLinkLabel(key) {
-    const labels = {
-        'mesAidesReno': 'Mes Aides Réno',
-        'franceRenov': 'France Rénov\''
-    };
-    return labels[key] || key;
+function animateCounter(element, start, end, duration, withFormat = true) {
+    if (!element) return;
+    
+    const startTime = performance.now();
+    const range = end - start;
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Utiliser une fonction d'easing pour un effet plus naturel (ease-out)
+        const easeOutQuad = progress * (2 - progress);
+        const current = Math.round(start + range * easeOutQuad);
+        
+        element.textContent = withFormat ? formatNumber(current) : current;
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            // S'assurer que la valeur finale est exacte
+            element.textContent = withFormat ? formatNumber(end) : end;
+        }
+    }
+    
+    requestAnimationFrame(update);
 }
 
 // Event listeners
@@ -459,16 +490,97 @@ dom.openSettings?.addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
 });
 
-// Gestion du bouton d'analyse (affiche l'analyse du bien)
-dom.analyzeButton?.addEventListener('click', async () => {
-    if (currentPropertyData) {
-        await showAnalysis();
-    }
-});
-
 // Gestion du bouton de calcul des aides (lance l'API)
 dom.calculateAidsButton?.addEventListener('click', async () => {
     if (currentPropertyData) {
         await analyzeProperty();
     }
 });
+
+// Gestion du bouton "Récupérer mon compte-rendu"
+dom.showEmailFormButton?.addEventListener('click', () => {
+    // Pré-remplir le formulaire
+    prefillEmailForm();
+    
+    // Afficher la section email
+    showSection('emailSection');
+});
+
+// Gestion du bouton retour aux résultats
+dom.backToResults?.addEventListener('click', () => {
+    showSection('results');
+});
+
+// Gestion de l'envoi par email
+dom.emailForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const nom = dom.emailNom.value.trim();
+    const prenom = dom.emailPrenom.value.trim();
+    const email = dom.emailAddress.value.trim();
+    
+    if (!nom || !prenom || !email) {
+        showEmailMessage('Veuillez remplir tous les champs', 'error');
+        return;
+    }
+    
+    // Vérification basique de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showEmailMessage('Veuillez entrer une adresse email valide', 'error');
+        return;
+    }
+    
+    try {
+        // Préparer le contenu du compte-rendu
+        const aidesText = Array.from(dom.aidesList.querySelectorAll('.aide-item'))
+            .map(item => {
+                const name = item.querySelector('h5')?.textContent || '';
+                const amount = item.querySelector('.aide-amount')?.textContent || '';
+                return `• ${name}: ${amount}`;
+            }).join('\n');
+        
+        const emailContent = {
+            to: email,
+            nom: nom,
+            prenom: prenom,
+            property: {
+                titre: currentPropertyData.titre,
+                prix: currentPropertyData.prix,
+                localisation: currentPropertyData.localisation || currentPropertyData.codePostal,
+                surface: currentPropertyData.surface
+            },
+            aides: {
+                montantTotal: dom.aidAmount.textContent,
+                pourcentage: dom.aidPercent.textContent,
+                liste: aidesText
+            }
+        };
+        
+        // Simuler l'envoi (à remplacer par un vrai service d'email)
+        console.log('📧 Envoi du compte-rendu:', emailContent);
+        
+        // Simulation d'un délai d'envoi
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        showEmailMessage(`✅ Compte-rendu envoyé à ${email}`, 'success');
+        
+        // Réinitialiser le formulaire après 3 secondes
+        setTimeout(() => {
+            dom.emailMessage.classList.add('hidden');
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Erreur envoi email:', error);
+        showEmailMessage('❌Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+    }
+});
+
+/**
+ * Afficher un message dans le formulaire email
+ */
+function showEmailMessage(message, type) {
+    dom.emailMessage.textContent = message;
+    dom.emailMessage.className = `email-message ${type}`;
+    dom.emailMessage.classList.remove('hidden');
+}

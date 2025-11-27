@@ -25,6 +25,12 @@ async function loadOptions() {
             document.getElementById('residencePrincipale').value = config.residencePrincipale || 'oui';
             document.getElementById('dpeActuel').value = config.dpeActuel || '6';
             document.getElementById('dpeVise').value = config.dpeVise || '2';
+            
+            // Informations de contact
+            document.getElementById('nom').value = config.nom || '';
+            document.getElementById('prenom').value = config.prenom || '';
+            document.getElementById('email').value = config.email || '';
+            
             document.getElementById('budgetAchat').value = config.budgetAchat || '';
             document.getElementById('surfaceLogement').value = config.surfaceLogement || '';
             document.getElementById('periodeConstruction').value = config.periodeConstruction || 'au moins 15 ans';
@@ -69,6 +75,12 @@ form.addEventListener('submit', (e) => {
         residencePrincipale: document.getElementById('residencePrincipale').value,
         dpeActuel: parseInt(document.getElementById('dpeActuel').value) || 6,
         dpeVise: parseInt(document.getElementById('dpeVise').value) || 2,
+        
+        // Informations de contact
+        nom: document.getElementById('nom').value.trim() || '',
+        prenom: document.getElementById('prenom').value.trim() || '',
+        email: document.getElementById('email').value.trim() || '',
+        
         budgetAchat: parseInt(document.getElementById('budgetAchat').value) || null,
         surfaceLogement: parseInt(document.getElementById('surfaceLogement').value) || null,
         periodeConstruction: document.getElementById('periodeConstruction').value,

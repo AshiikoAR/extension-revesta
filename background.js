@@ -84,8 +84,18 @@ async function fetchMesAidesReno(propertyData) {
     const travaux = userConfig.budgetTravaux || propertyData.prix || 50000;
     const revenus = userConfig.revenus || 25000;
     const personnes = userConfig.nombrePersonnes || 3;
-    const dpeActuel = userConfig.dpeActuel || 6;
+    
+    // Utiliser le DPE de l'annonce si disponible, sinon celui de l'utilisateur
+    const dpeActuel = propertyData.dpe || userConfig.dpeActuel || 6;
     const dpeVise = userConfig.dpeVise || 2;
+    
+    // Log pour debug
+    if (propertyData.dpe) {
+      console.log(`📊 DPE extrait de l'annonce: ${propertyData.dpe}`);
+    } else {
+      console.log(`📊 DPE utilisateur utilisé: ${dpeActuel}`);
+    }
+    
     const residencePrincipale = userConfig.residencePrincipale === 'oui' ? 'oui' : 'non';
     const periodeConstruction = userConfig.periodeConstruction || 'au moins 15 ans';
     const surface = userConfig.surfaceLogement || propertyData.surface || null;
