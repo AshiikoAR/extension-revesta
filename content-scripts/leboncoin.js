@@ -395,9 +395,37 @@ function detectWorkType(description) {
 }
 
 /**
+ * Vérifier si l'URL correspond à une annonce de vente immobilière
+ */
+function isValidPropertyUrl() {
+  const url = window.location.href;
+  // Format: https://www.leboncoin.fr/ad/ventes_immobilieres/[identifiant]
+  const regex = /^https:\/\/www\.leboncoin\.fr\/ad\/ventes_immobilieres\/\d+/;
+  return regex.test(url);
+}
+
+/**
+ * Supprimer le bouton de l'extension s'il existe
+ */
+function removeExtensionButton() {
+  const existingButton = document.getElementById('reno-aides-btn');
+  if (existingButton) {
+    existingButton.remove();
+    console.log('🗑️ Bouton supprimé (URL non valide)');
+  }
+}
+
+/**
  * Ajouter un bouton pour analyser les aides
  */
 function addExtensionButton() {
+  // Vérifier si l'URL est valide
+  if (!isValidPropertyUrl()) {
+    console.log('⏭️ URL non valide pour afficher le bouton (pas une annonce ventes_immobilieres)');
+    removeExtensionButton();
+    return;
+  }
+
   // Vérifier si le bouton existe déjà
   if (document.getElementById('reno-aides-btn')) return;
 
@@ -502,5 +530,22 @@ observer.observe(document.body, {
   subtree: true,
   attributes: false
 });
+
+// Détecter les changements d'URL pour les sites en SPA (Single Page Application)
+let lastUrl = location.href;
+new MutationObserver(() => {
+  const currentUrl = location.href;
+  if (currentUrl !== lastUrl) {
+    lastUrl = currentUrl;
+    console.log('🔄 Changement d\'URL détecté:', currentUrl);
+    
+    // Vérifier si on doit afficher/masquer le bouton
+    if (isValidPropertyUrl()) {
+      setTimeout(extractLeBonCoinData, 500);
+    } else {
+      removeExtensionButton();
+    }
+  }
+}).observe(document, { subtree: true, childList: true });
 
 console.log('✅ LeBonCoin Content Script prêt');

@@ -71,6 +71,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             showEmpty();
             return;
         }
+        
+        // Vérifier si l'URL correspond à une annonce de vente immobilière
+        if (!isValidPropertyUrl(tab.url)) {
+            console.log('❌ URL non valide (pas une annonce ventes_immobilieres)');
+            showEmpty();
+            return;
+        }
 
         console.log('✅ Site supporté, tentative de récupération des données...');
 
@@ -211,6 +218,15 @@ function isSupportedSite(url) {
 }
 
 /**
+ * Vérifier si l'URL correspond à une annonce de vente immobilière
+ */
+function isValidPropertyUrl(url) {
+    // Format: https://www.leboncoin.fr/ad/ventes_immobilieres/[identifiant]
+    const regex = /^https:\/\/www\.leboncoin\.fr\/ad\/ventes_immobilieres\/\d+/;
+    return regex.test(url);
+}
+
+/**
  * Afficher l'analyse complète du bien
  */
 async function showAnalysis() {
@@ -270,7 +286,7 @@ async function showAnalysis() {
     } else {
         if (dpeItem) dpeItem.style.display = '';
         // Afficher la source du DPE
-        const dpeSource = currentPropertyData.dpe ? '' : ' (tiré de vos paramètres)';
+        const dpeSource = currentPropertyData.dpe ? '' : ' (par défaut)';
         dom.analysisDPE.textContent = `${dpeLabels[dpeActuel]}${dpeSource} → ${dpeLabels[dpeVise]}`;
     }
     
@@ -281,7 +297,7 @@ async function showAnalysis() {
     
     const personnes = userConfig.nombrePersonnes || 3;
     const revenus = userConfig.revenus || 25000;
-    dom.analysisMenage.textContent = `${personnes} personne${personnes > 1 ? 's' : ''} - ${revenus.toLocaleString()} €/an`;
+    dom.analysisMenage.textContent = `${personnes} personne${personnes > 1 ? 's' : ''} • ${revenus.toLocaleString()} €/an`;
 }
 
 /**
@@ -346,12 +362,27 @@ function displayResults(data) {
     // Estimation avec animation
     const montantTotal = data.estimationAide.montantTotal;
     const percentEstimate = currentPropertyData.prix 
-        ? Math.round((montantTotal / currentPropertyData.prix) * 100)
+        ? ((montantTotal / currentPropertyData.prix) * 100)
         : 0;
     
-    // Animer le montant et le pourcentage
-    animateCounter(dom.aidAmount, 0, montantTotal, 1500, true);
-    animateCounter(dom.aidPercent, 0, percentEstimate, 1500, false);
+    // Vérifier si aucune subvention n'est disponible
+    const aidEstimateText = document.getElementById('aidEstimateText');
+    const aidAmountContainer = document.getElementById('aidAmountContainer');
+    
+    if (montantTotal === 0) {
+        // Aucune subvention disponible
+        aidEstimateText.innerHTML = 'Aïe... Pas de subventions pour ce bien !&ensp;&#x1F62C;';
+    } else {
+        // Subventions disponibles
+        aidEstimateText.innerHTML = '&#x1F4B0;&ensp;Subventions estimées &bull; Soit <span id="aidPercent">0</span>% du bien !';
+        
+        // Récupérer la nouvelle référence après innerHTML
+        const aidPercentElement = document.getElementById('aidPercent');
+        
+        // Animer le montant et le pourcentage (avec décimales)
+        animateCounter(dom.aidAmount, 0, montantTotal, 1500, true, false);
+        animateCounter(aidPercentElement, 0, percentEstimate, 1500, false, true);
+    }
 
     // Aides
     displayAides(data.aides);
@@ -391,9 +422,24 @@ function displayAides(aides) {
     aides.forEach(aide => {
         const aidElement = document.createElement('div');
         aidElement.className = 'aide-item';
+        
+        // Pour les prêts, afficher le taux et la durée
+        let montantInfo = '';
+        if (aide.montantEstime) {
+            if (aide.details) {
+                montantInfo = `${aide.details} &bull; Jusqu'à ${formatNumber(aide.montantEstime)} €`;
+            } else {
+                montantInfo = `Subvention directe &bull; ${formatNumber(aide.montantEstime)} €`;
+            }
+        }
+        
+        // Mettre la première lettre en majuscule
+        const nomAide = aide.nom || 'Aide';
+        const nomAideCapitalized = nomAide.charAt(0).toUpperCase() + nomAide.slice(1);
+        
         aidElement.innerHTML = `
-            <h5 title="Max ${aide.description || ''}.">${aide.nom || 'Aide'}</h5>
-            ${aide.montantEstime ? `<p>Jusqu'à ${formatNumber(aide.montantEstime)} €</p>` : ''}
+            <h5 title="${aide.description || ''} maximum">${nomAideCapitalized}</h5>
+            ${montantInfo ? `<p>${montantInfo}</p>` : ''}
         `;
         dom.aidesList.appendChild(aidElement);
     });
@@ -454,7 +500,7 @@ function getPropertyTypeLabel(type) {
 /**
  * Animer un compteur numérique
  */
-function animateCounter(element, start, end, duration, withFormat = true) {
+function animateCounter(element, start, end, duration, withFormat = true, withDecimals = false) {
     if (!element) return;
     
     const startTime = performance.now();
@@ -466,15 +512,24 @@ function animateCounter(element, start, end, duration, withFormat = true) {
         
         // Utiliser une fonction d'easing pour un effet plus naturel (ease-out)
         const easeOutQuad = progress * (2 - progress);
-        const current = Math.round(start + range * easeOutQuad);
+        const current = start + range * easeOutQuad;
         
-        element.textContent = withFormat ? formatNumber(current) : current;
+        // Formater selon le type
+        if (withDecimals) {
+            element.textContent = current.toFixed(1);
+        } else {
+            element.textContent = withFormat ? formatNumber(Math.round(current)) : Math.round(current);
+        }
         
         if (progress < 1) {
             requestAnimationFrame(update);
         } else {
             // S'assurer que la valeur finale est exacte
-            element.textContent = withFormat ? formatNumber(end) : end;
+            if (withDecimals) {
+                element.textContent = end.toFixed(1);
+            } else {
+                element.textContent = withFormat ? formatNumber(Math.round(end)) : Math.round(end);
+            }
         }
     }
     

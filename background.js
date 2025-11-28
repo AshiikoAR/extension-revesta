@@ -243,9 +243,9 @@ function parseEligibiliteResponse(data, propertyData) {
     // Ajouter les détails pour les prêts
     if (aide.type === 'prêt' && (aide.taux || aide.durée)) {
       aideObj.details = [];
-      if (aide.taux) aideObj.details.push(`Taux: ${aide.taux}`);
-      if (aide.durée) aideObj.details.push(`Durée: ${aide.durée}`);
-      aideObj.details = aideObj.details.join(' • ');
+      if (aide.taux) aideObj.details.push(`Taux à ${aide.taux}`);
+      if (aide.durée) aideObj.details.push(`sur ${aide.durée}`);
+      aideObj.details = aideObj.details.join(' ');
     }
     
     aides.push(aideObj);
@@ -280,17 +280,24 @@ async function analyzeAids(propertyData) {
 
 /**
  * Estimer le montant total des aides
+ * Exclut les prêts du calcul (ce sont des prêts, pas des subventions)
  */
 function calculateEstimatedAid(aides) {
   let total = 0;
+  let nombreAidesSubventions = 0;
   
   aides.forEach(aide => {
-    total += aide.montantEstime || 0;
+    // Exclure les prêts du calcul total
+    if (aide.type !== 'prêt') {
+      total += aide.montantEstime || 0;
+      nombreAidesSubventions++;
+    }
   });
 
   return {
     montantTotal: total,
-    nombreAides: aides.length
+    nombreAides: nombreAidesSubventions,
+    nombrePrets: aides.filter(a => a.type === 'prêt').length
   };
 }
 

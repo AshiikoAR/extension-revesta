@@ -1,22 +1,23 @@
-# 🏠 RénoAides - Extension Immobilière Intelligente
+# 🏠 Revesta - Extension Immobilière Intelligente
 
-Une extension Chromium qui aide les acheteurs et rénovateurs à découvrir **toutes les aides financières auxquelles ils ont droit** directement depuis les annonces immobilières (LeBonCoin).
+Une extension Chrome qui aide les acheteurs à découvrir **toutes les subventions et aides financières à la rénovation énergétique** directement depuis les annonces immobilières LeBonCoin.
 
 ## 📋 Fonctionnalités principales
 
-✅ **Scraping automatique** des annonces immobilières  
-✅ **Calcul des aides disponibles** via les APIs officielles de l'État  
-✅ **Estimation du budget** après aides  
-✅ **Support ciblé sur LeBonCoin**  
-✅ **Stockage local** des données utilisateur  
-✅ **Notifications intelligentes** quand des aides deviennent disponibles  
+✅ **Extraction automatique** des données d'annonces LeBonCoin  
+✅ **Calcul des subventions** via l'API Mes Aides Réno (beta.gouv.fr)  
+✅ **Estimation personnalisée** basée sur votre profil (revenus, ménage, statut)  
+✅ **Détection automatique** du DPE (Diagnostic de Performance Énergétique)  
+✅ **Affichage des prêts** à taux zéro avec taux et durée  
+✅ **Compte-rendu par email** avec template HTML professionnel  
+✅ **Interface moderne** avec animations et design Revesta  
 
 ## 🎯 Cas d'usage
 
-- 👨‍👩‍👧 Jeune couple cherchant à acheter sa première maison → Découvrir le PTZ, l'Éco-PTZ, les aides régionales
-- 🔨 Propriétaire en rénovation → MaprimeRénov', Mes Aides Rénov', aides collectivités
-- 👵 Sénior en restructuration → Aides spécifiques aux personnes âgées
-- 🌱 Transition énergétique → Aides énergies renouvelables
+- 👨‍👩‍👧 **Jeune couple** cherchant à acheter et rénover → Découvrir MaPrimeRénov', éco-PTZ
+- 🔨 **Propriétaire rénovateur** → Subventions parcours accompagné, Mon Accompagnateur Rénov'
+- 🌱 **Transition énergétique** → Prêts à 0%, aides selon DPE actuel et visé
+- 💰 **Investisseur bailleur** → Aides spécifiques propriétaires bailleurs
 
 ## 🚀 Installation
 
@@ -48,77 +49,101 @@ cd extension-revesta
 
 ```
 extension-revesta/
-├── manifest.json                    # Configuration de l'extension
-├── background.js                    # Service Worker (backend)
+├── manifest.json                    # Configuration Manifest V3
+├── background.js                    # Service Worker - Appels API
 ├── popup.html & popup.js           # Interface principale
-├── options.html & options.js       # Page de paramètres
+├── options.html & options.js       # Page de paramètres utilisateur
+├── email-template.html             # Template email compte-rendu
 │
-├── content-scripts/                 # Scripts injectés dans les pages
-│   └── leboncoin.js                # Parseur LeBonCoin
+├── content-scripts/                 # Scripts injectés
+│   └── leboncoin.js                # Extraction données LeBonCoin + bouton flottant
 │
 ├── styles/
-│   ├── popup.css                   # Styles du popup
-│   └── options.css                 # Styles des paramètres
+│   ├── popup.css                   # Design moderne avec gradients
+│   └── options.css                 # Styles paramètres
 │
-├── images/                          # Icônes de l'extension
-│   ├── icon-16.png
-│   ├── icon-48.png
-│   └── icon-128.png
-│
-└── README.md                        # Cette documentation
+└── images/
+    ├── revesta_logo.svg            # Logo Revesta
+    ├── icon-16.png                 # Icône extension
+    ├── icon-48.png
+    └── icon-128.png
 ```
 
 ## 🔧 Architecture & Flux de données
 
 ```
-┌─────────────────────┐
-│ Content Scripts     │
-│ (LeBonCoin, etc)   │
-│ → Extrait données  │
-└──────────┬──────────┘
+┌─────────────────────────────┐
+│ LeBonCoin Page              │
+│ (ventes_immobilieres only)  │
+└──────────┬──────────────────┘
            │
            ▼
-┌─────────────────────┐
-│ Popup (Frontend)    │
-│ → UI utilisateur    │
-└──────────┬──────────┘
+┌─────────────────────────────┐
+│ Content Script              │
+│ - Extraction titre/prix/DPE │
+│ - Bouton flottant           │
+│ - URL validation            │
+└──────────┬──────────────────┘
            │
            ▼
-┌─────────────────────┐
-│ Background Worker   │
-│ → Orchestration     │
-└──────────┬──────────┘
+┌─────────────────────────────┐
+│ Popup Interface             │
+│ - Analyse propriété         │
+│ - Calcul subventions        │
+│ - Animation compteurs       │
+│ - Formulaire email          │
+└──────────┬──────────────────┘
            │
-    ┌──────┴──────┬──────────┐
-    ▼             ▼          ▼
-┌────────┐  ┌──────────┐  ┌──────┐
-│API Geo │  │MesAides  │  │Aides │
-│.gouv   │  │Rénov'    │  │Région│
-└────────┘  └──────────┘  └──────┘
+           ▼
+┌─────────────────────────────┐
+│ Background Service Worker   │
+│ - Conversion CP → INSEE     │
+│ - Appel Mes Aides Réno API  │
+│ - Parse réponse eligibilite │
+└──────────┬──────────────────┘
+           │
+    ┌──────┴──────┬──────────────┐
+    ▼             ▼              ▼
+┌────────┐  ┌──────────────┐  ┌─────────┐
+│geo.api │  │mesaidesreno  │  │Storage  │
+│.gouv.fr│  │.beta.gouv.fr │  │(config) │
+└────────┘  └──────────────┘  └─────────┘
 ```
+
+**Workflow principal :**
+1. Utilisateur visite annonce LeBonCoin ventes_immobilieres
+2. Content script extrait données + affiche bouton
+3. Clic bouton → Popup récupère données
+4. Popup affiche analyse directe (sans étape intermédiaire)
+5. Clic "Calculer" → Background appelle API
+6. Résultats affichés avec animations (montant, pourcentage)
+7. Clic "Récupérer compte-rendu" → Formulaire email
 
 ## � APIs intégrées
 
-### 1. **Mes Aides Rénov'** (MESR)
-- URL: `https://mesaidesreno.gouv.fr/`
-- Aides à la rénovation thermique
-- Critères: code postal, type travaux, budget
+### 1. **Mes Aides Réno** (API v1)
+- **URL** : `https://mesaidesreno.beta.gouv.fr/api/v1`
+- **Endpoint** : `?fields=eligibilite`
+- **Token** : Requis (stocké dans background.js)
+- **Paramètres** : 17+ champs (code_insee, type_logement, revenus, statut, DPE, etc.)
+- **Réponse** : Liste d'aides avec `status`, `rawValue`, `type` (subvention/prêt)
+- **Aides retournées** :
+  - MaPrimeRénov' parcours accompagné
+  - Éco-prêt à taux zéro (éco PTZ)
+  - Prêt avance rénovation 0%
+  - Mon Accompagnateur Rénov' Subvention
 
-### 2. **MaPrimeRénov'** (ANAH)
-- URL: `https://www.maprimerenov.gouv.fr/`
-- Rénovation de la qualité énergétique
-- Critères: revenus, type logement, travaux
+### 2. **API Geo Gouvernement**
+- **URL** : `https://geo.api.gouv.fr/communes`
+- **Usage** : Conversion code postal → code INSEE
+- **Paramètres** : `?codePostal=XXXXX&fields=code,nom,codesPostaux`
+- **Matching** : Intelligent avec nom de ville
+- **Gratuit** : Aucune authentification requise
 
-### 3. **API Geo.gouv**
-- URL: `https://api.geo.gouv.fr/`
-- Localisation et informations régionales
-- Gratuit et sans authentification
-
-### 4. **Autres aides** (à implémenter)
-- PTZ (Prêt à Taux Zéro)
-- Éco-PTZ (Prêt Écologique)
-- Aides régionales et locales
-- Programme Mon Accompagné Rénov'
+### 3. **Chrome Storage Sync**
+- **Usage** : Stockage configuration utilisateur
+- **Données** : 17+ paramètres (revenus, ménage, statut, DPE, contact)
+- **Sync** : Synchronisé entre appareils
 
 ## 🔐 Permissions & Sécurité
 
@@ -188,49 +213,78 @@ async function fetchNewAid(propertyData) {
 
 ```javascript
 window.propertyData = {
-  site: 'leboncoin',          // Source
-  titre: 'Maison 80m²',       // Titre annonce
-  prix: 350000,               // € (nombre)
-  localisation: 'Paris 75001', // Texte
-  codePostal: '75001',        // 5 chiffres
-  surface: 80,                // m² (nombre)
-  pieces: 3,                  // Nombre
-  typeLogement: 'maison',     // 'maison'|'appartement'|'terrain'|'autre'
-  typeWork: 'renovation',     // Type travaux detectés
-  description: '...',         // Texte complet
-  url: 'https://...',         // Lien annonce
-  dateExtraction: '2025-11-06T12:34:56Z'
+  site: 'leboncoin',              // Source
+  titre: 'Maison 4 pièces 80m²',  // Titre nettoyé (sans prix/surface)
+  prix: 350000,                   // € (nombre)
+  localisation: 'Paris',          // Ville
+  codePostal: '75001',            // 5 chiffres
+  ville: 'Paris',                 // Nom de la ville
+  surface: 80,                    // m² (nombre)
+  pieces: 4,                      // Nombre
+  typeLogement: 'maison',         // 'maison'|'appartement'|'terrain'
+  dpe: 6,                         // DPE actuel (1=A à 7=G)
+  url: 'https://...',             // Lien annonce
+  dateExtraction: '2025-11-28T...'
 };
 ```
 
+**Extraction intelligente :**
+- Titre nettoyé avec regex (supprime prix et surface)
+- Support formatage français (espaces comme séparateurs de milliers)
+- DPE extrait depuis energy-criteria
+- Code postal via 6 méthodes fallback
+- Type logement avec délai 500ms + priorité keywords
+
 ## 🧪 Tests
 
-### Test manuel sur LeBonCoin
-1. Allez sur une annonce LeBonCoin immobilière
-2. Vous verrez le bouton 🏠 "Voir les aides disponibles" en bas-droit
-3. Cliquez → Le popup s'ouvre avec les aides disponibles
+### Test sur LeBonCoin
+1. Visitez une annonce **ventes_immobilieres** : `https://www.leboncoin.fr/ad/ventes_immobilieres/[ID]`
+2. Le bouton "🏠 Voir les aides disponibles" apparaît en bas à droite
+3. Clic → Popup s'ouvre avec analyse directe
+4. Clic "📊 Analyser les aides disponibles" → API call + résultats animés
+5. Les subventions et prêts sont différenciés
 
-### Outils de debugging
-- **Popup** : Clic-droit → Inspecter
-- **Background** : `chrome://extensions/` → RénoAides → "Service Worker"
-- **Content Script** : Outils dev (F12) → Console
+### Validation URL
+- ✅ Bouton apparaît uniquement sur `/ad/ventes_immobilieres/\d+`
+- ✅ Bouton disparaît sur autres pages (navigation SPA)
+- ✅ Popup affiche "empty state" si pas sur annonce valide
 
-## � Dépannage
+### Debugging
+- **Popup** : Clic-droit sur popup → Inspecter
+- **Background** : chrome://extensions/ → Revesta → Service Worker
+- **Content Script** : Console (F12) → Logs préfixés 🏠/📊/✅/❌
 
-- ### Le bouton n'apparaît pas
-- ✓ Vérifiez que vous êtes sur LeBonCoin
-- ✓ Rechargez la page
-- ✓ Rechargez l'extension (F5 sur la page des extensions)
+### Logs clés
+```javascript
+console.log('🏠 Données extraites:', propertyData);
+console.log('📊 DPE extrait de l\'annonce:', dpe);
+console.log('✅ Code INSEE trouvé:', codeInsee);
+console.log('❌ Erreur Mes Aides Réno:', error);
+```
 
-### Pas d'aides trouvées
-- ✓ Vérifiez votre code postal
-- ✓ Vérifiez votre connexion internet
-- ✓ Ouvrez la console (F12) pour les erreurs
+## ⚠️ Dépannage
+
+### Le bouton n'apparaît pas
+- ✓ Vérifiez que l'URL est bien `https://www.leboncoin.fr/ad/ventes_immobilieres/[ID]`
+- ✓ Autres catégories (locations, colocations) ne sont pas supportées
+- ✓ Rechargez la page (F5)
+- ✓ Rechargez l'extension dans chrome://extensions/
+
+### Aucune subvention trouvée
+- ✓ Message "Aïe... Pas de subventions pour ce bien ! 😬"
+- ✓ Vérifiez votre code postal dans les paramètres
+- ✓ Vérifiez vos revenus (peut impacter l'éligibilité)
+- ✓ Certains codes postaux ne sont pas encore supportés par l'API
+
+### Le pourcentage affiche 0%
+- ✓ Normal si uniquement des prêts sont disponibles (prêts exclus du calcul)
+- ✓ Seules les **subventions** sont comptabilisées dans le total
+- ✓ Les prêts (éco-PTZ, etc.) restent affichés dans la liste
 
 ### Le popup ne s'ouvre pas
-- ✓ Vérifiez les permissions dans les logs
-- ✓ Rechargez l'extension
-- ✓ Essayez un autre navigateur
+- ✓ Vérifiez que vous êtes sur une annonce valide
+- ✓ Ouvrez la console (F12) pour voir les erreurs
+- ✓ Vérifiez les permissions dans chrome://extensions/
 
 ## � Ressources utiles
 
@@ -251,13 +305,24 @@ window.propertyData = {
 
 ## 🗓️ Roadmap
 
-- [ ] Support Immoweb, Ventes-Annonces
-- [ ] Comparaison de plusieurs propriétés
-- [ ] Export PDF des aides
-- [ ] Intégration ChatGPT pour conseils personnalisés
-- [ ] Mode sombre
-- [ ] Multilingue (EN, DE, ES)
-- [ ] Publication sur Chrome Web Store
+### Fonctionnalités actuelles (v1.0)
+- ✅ Extraction données LeBonCoin (ventes_immobilieres uniquement)
+- ✅ Calcul subventions via Mes Aides Réno API
+- ✅ Détection automatique DPE
+- ✅ Interface moderne avec animations
+- ✅ Distinction subventions/prêts dans le calcul
+- ✅ Formulaire email pré-rempli
+- ✅ Template HTML email professionnel
+
+### Prochaines versions
+- [ ] **v1.1** : Envoi réel d'emails (service backend)
+- [ ] **v1.2** : Export PDF du compte-rendu
+- [ ] **v1.3** : Historique des propriétés analysées
+- [ ] **v2.0** : Support SeLoger, PAP, Logic-Immo
+- [ ] **v2.1** : Comparaison de plusieurs propriétés
+- [ ] **v3.0** : Mode sombre
+- [ ] **v3.1** : Multilingue (EN, ES)
+- [ ] Publication Chrome Web Store
 
 ## 📝 Licence
 
@@ -280,6 +345,6 @@ Les contributions sont bienvenues ! Pour contribuer :
 
 ---
 
-**Créée avec ❤️ pour aider les Français à trouver les aides immobilières**
+**Créée avec ❤️ pour aider les Français à découvrir les aides à la rénovation énergétique**
 
-v1.0.0 • Novembre 2025
+**v1.0.0** • Novembre 2025 • Revesta Extension

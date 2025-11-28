@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REVESTA - Assistant Immobilier</title>
+    <link rel="stylesheet" href="styles/option.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Header -->
+      <div class="email-header">
+        <img src="images/Revesta_LogoTextuel-V2.png" alt="Revesta Logo">
+        <h1>Votre compte-rendu personnalisé</h1>
+        <p>Estimation des aides à la rénovation énergétique</p>
+      </div>
+      <div class="header">
+        <a href="https://www.revesta.fr" target="_blank" rel="noopener" title="revesta.fr">
+            <img src="images/Revesta_LogoTextuel-Blanc.png" alt="REVESTA Logo" class="logo">
+        </a>
+        <p>Renseignez vos informations pour obtenir des résultats personnalisés.</p>
+      </div>
+      
+      <!-- Body -->
+      <div class="email-body">
+        <!-- Greeting -->
+        <div class="greeting">
+          <p>Bonjour <strong>{{PRENOM}} {{NOM}}</strong>,</p>
+          <p>Voici le compte-rendu détaillé des aides à la rénovation énergétique disponibles pour votre projet immobilier.</p>
+        </div>
+        
+        <!-- Property Details -->
+        <div class="property-section">
+          <h2>🏠 Votre bien immobilier</h2>
+          <div class="property-details">
+            <div class="property-item">
+              <span class="property-label">Titre</span>
+              <span class="property-value">{{TITRE}}</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Prix</span>
+              <span class="property-value">{{PRIX}} €</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Surface</span>
+              <span class="property-value">{{SURFACE}} m²</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Localisation</span>
+              <span class="property-value">{{LOCALISATION}}</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Prix au m²</span>
+              <span class="property-value">{{PRIX_M2}} €/m²</span>
+            </div>
+          </div>
+        </div>
+          
+        <!-- Estimate -->
+        <div class="estimate-section">
+          <h2>💰 Estimation totale des subventions</h2>
+          <div class="estimate-amount">{{MONTANT_TOTAL}} €</div>
+          <div class="estimate-percent">Soit {{POURCENTAGE}}% du prix du bien !</div>
+        </div>
+        
+        <!-- Aides List -->
+        <div class="aides-section">
+          <h2>🏦 Aides disponibles</h2>
+          
+          <!-- Aide Item Template - Repeat for each aide -->
+          {{AIDES_LIST}}
+          <!-- Example:
+          <div class="aide-item">
+              <h3>MaPrimeRénov' parcours accompagné</h3>
+              <p>Subventions • Jusqu'à 24 000 €</p>
+          </div>
+          -->
+        </div>
+        
+        <!-- Info Section -->
+        <div class="info-section">
+          <h3>ℹ️ Prochaines étapes</h3>
+          <p>
+              Ces estimations sont basées sur votre profil et les caractéristiques du bien. 
+              Pour obtenir des montants précis et démarrer vos démarches, nous vous recommandons 
+              de consulter un conseiller France Rénov' ou de visiter le site officiel Mes Aides Réno.
+          </p>
+        </div>
+          
+        <!-- CTA -->
+        <div style="text-align: center;">
+          <a href="https://mesaidesreno.beta.gouv.fr/" class="cta-button">
+            Découvrir Mes Aides Réno
+          </a>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="email-footer">
+        <p>Ce compte-rendu a été généré par l'extension Revesta</p>
+        <p>Pour plus d'informations : <a href="https://mesaidesreno.beta.gouv.fr/">Mes Aides Réno</a> | <a href="https://france-renov.gouv.fr/">France Rénov'</a></p>
+        
+        <div class="social-links">
+          <a href="#" title="Facebook">📘</a>
+          <a href="#" title="Twitter">🐦</a>
+          <a href="#" title="LinkedIn">💼</a>
+        </div>
+        
+        <p style="margin-top: 15px; font-size: 11px;">
+          © 2025 Revesta. Tous droits réservés.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
