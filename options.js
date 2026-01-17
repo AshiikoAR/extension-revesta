@@ -30,6 +30,7 @@ async function loadOptions() {
             document.getElementById('nom').value = config.nom || '';
             document.getElementById('prenom').value = config.prenom || '';
             document.getElementById('email').value = config.email || '';
+            document.getElementById('telephone').value = config.telephone || '';
             
             document.getElementById('budgetAchat').value = config.budgetAchat || '';
             document.getElementById('surfaceLogement').value = config.surfaceLogement || '';
@@ -80,6 +81,7 @@ form.addEventListener('submit', (e) => {
         nom: document.getElementById('nom').value.trim() || '',
         prenom: document.getElementById('prenom').value.trim() || '',
         email: document.getElementById('email').value.trim() || '',
+        telephone: document.getElementById('telephone').value.trim() || '',
         
         budgetAchat: parseInt(document.getElementById('budgetAchat').value) || null,
         surfaceLogement: parseInt(document.getElementById('surfaceLogement').value) || null,

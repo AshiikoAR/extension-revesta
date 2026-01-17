@@ -392,7 +392,7 @@ body {
 }
 
 /* Inputs du formulaire */
-.form-row input[type="text"], .email-form input[type="email"] {
+.form-row input[type="text"], .email-form input[type="email"], .email-form input[type="tel"] {
     padding: 0.75em 1em;
     border: 1px solid var(--border-color);
     border-radius: 2em;
@@ -404,17 +404,17 @@ body {
 
 .form-row input[type="text"] { width: 100%; }
 
-.email-form input[type="email"] {
+.email-form input[type="email"], .email-form input[type="tel"] {
     flex: 1;
     margin: 0 1em;
 }
 
-.form-row input[type="text"]:hover, .email-form input[type="email"]:hover {
+.form-row input[type="text"]:hover, .email-form input[type="email"]:hover, .email-form input[type="tel"]:hover {
     border-color: var(--primary-color);
     background: var(--bg-color);
 }
 
-.form-row input[type="text"]:focus, .email-form input[type="email"]:focus {
+.form-row input[type="text"]:focus, .email-form input[type="email"]:focus, .email-form input[type="tel"]:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.12);

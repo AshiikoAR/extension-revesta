@@ -104,7 +104,7 @@ body {
     padding-left: 0.5em;
 }
 
-.form-group input[type="text"], .form-group input[type="number"], .form-group input[type="email"], .form-group select {
+.form-group input[type="text"], .form-group input[type="number"], .form-group input[type="email"], .form-group input[type="tel"], .form-group select {
     width: 100%;
     padding: 0.75em 1em;
     border: 1px solid var(--border-color);
@@ -125,7 +125,7 @@ body {
   background-size: 0.65rem auto; 
 }
 
-.form-group input[type="text"]:hover, .form-group input[type="number"]:hover, .form-group input[type="email"]:hover, .form-group select:hover {
+.form-group input[type="text"]:hover, .form-group input[type="number"]:hover, .form-group input[type="email"]:hover, .form-group input[type="tel"]:hover, .form-group select:hover {
     border-color: var(--primary-color);
     color: var(--text-color);
     background: var(--bg-color);
@@ -134,6 +134,7 @@ body {
 .form-group input[type="text"]:focus,
 .form-group input[type="number"]:focus,
 .form-group input[type="email"]:focus,
+.form-group input[type="tel"]:focus,
 .form-group select:focus {
     outline: none;
     border-color: var(--primary-color);

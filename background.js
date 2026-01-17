@@ -74,9 +74,7 @@ async function fetchMesAidesReno(propertyData) {
     const codePostal = propertyData.codePostal || userConfig.codePostal || '44109';
     const ville = propertyData.ville || '';
     
-    // Convertir le code postal en code INSEE (avec le nom de la ville si disponible)
-    const codeInsee = await getCodeInsee(codePostal, ville);
-    console.log('🏘️ Utilisation code INSEE:', codeInsee);
+    console.log('📍 Utilisation code postal:', codePostal, ville);
     
     // Récupérer les paramètres utilisateur avec valeurs par défaut
     const statut = userConfig.statut === 'bailleur' ? 'bailleur' : 'propriétaire';
@@ -103,8 +101,8 @@ async function fetchMesAidesReno(propertyData) {
     const taxeFonciere = userConfig.taxeFonciere || null;
     const conditionDepenses = userConfig.conditionDepenses !== false ? 'oui' : 'non';
     
-    // Construire l'URL exactement comme dans l'exemple qui fonctionne
-    // En utilisant le format exact de l'API doc avec GUILLEMETS DOUBLES
+    // Construire l'URL avec le code postal au lieu du code INSEE
+    // L'API Mes Aides Réno utilise directement le code postal
     const params = {
       'vous.propriétaire.statut': statut,
       'ménage.personnes': personnes.toString(),
@@ -112,11 +110,11 @@ async function fetchMesAidesReno(propertyData) {
       'DPE.actuel': dpeActuel.toString(),
       'projet.DPE visé': dpeVise.toString(),
       'projet.travaux': travaux.toString(),
-      'logement.type': `"${typeLogement}"`,
-      'logement.commune': `"${codeInsee}"`,
+      'logement.type': typeLogement,
+      'logement.code postal': codePostal,
       'logement.propriétaire occupant': residencePrincipale,
       'logement.résidence principale propriétaire': residencePrincipale,
-      'logement.période de construction': `"${periodeConstruction}"`,
+      'logement.période de construction': periodeConstruction,
       'taxe foncière.condition de dépenses': conditionDepenses,
       'fields': 'eligibilite'
     };
@@ -156,7 +154,7 @@ async function fetchMesAidesReno(propertyData) {
     });
     
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30 secondes
     
     const response = await fetch(url, {
       method: 'GET',
@@ -194,6 +192,12 @@ async function fetchMesAidesReno(propertyData) {
     return aides;
   } catch (error) {
     console.error('❌ Erreur Mes Aides Réno:', error.name, error.message);
+    
+    // Message d'erreur plus explicite pour le timeout
+    if (error.name === 'AbortError') {
+      throw new Error('L\'API Mes Aides Réno met trop de temps à répondre. Veuillez réessayer.');
+    }
+    
     throw error;
   }
 }

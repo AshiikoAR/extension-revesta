@@ -33,6 +33,7 @@ const dom = {
     emailNom: document.getElementById('emailNom'),
     emailPrenom: document.getElementById('emailPrenom'),
     emailAddress: document.getElementById('emailAddress'),
+    emailTelephone: document.getElementById('emailTelephone'),
     emailMessage: document.getElementById('emailMessage'),
     showEmailFormButton: document.getElementById('showEmailFormButton'),
     backToResults: document.getElementById('backToResults'),
@@ -406,6 +407,7 @@ async function prefillEmailForm() {
     if (userConfig.nom) dom.emailNom.value = userConfig.nom;
     if (userConfig.prenom) dom.emailPrenom.value = userConfig.prenom;
     if (userConfig.email) dom.emailAddress.value = userConfig.email;
+    if (userConfig.telephone) dom.emailTelephone.value = userConfig.telephone;
 }
 
 /**
@@ -573,6 +575,7 @@ dom.emailForm?.addEventListener('submit', async (e) => {
     const nom = dom.emailNom.value.trim();
     const prenom = dom.emailPrenom.value.trim();
     const email = dom.emailAddress.value.trim();
+    const telephone = dom.emailTelephone.value.trim();
     
     if (!nom || !prenom || !email) {
         showEmailMessage('Veuillez remplir tous les champs', 'error');
@@ -599,6 +602,7 @@ dom.emailForm?.addEventListener('submit', async (e) => {
             to: email,
             nom: nom,
             prenom: prenom,
+            telephone: telephone || null,
             property: {
                 titre: currentPropertyData.titre,
                 prix: currentPropertyData.prix,

@@ -4,113 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REVESTA - Assistant Immobilier</title>
-    <link rel="stylesheet" href="styles/option.css">
+    <link rel="stylesheet" href="styles/email.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   </head>
   <body>
-    <div class="email-container">
-      <!-- Header -->
-      <div class="email-header">
-        <img src="images/Revesta_LogoTextuel-V2.png" alt="Revesta Logo">
-        <h1>Votre compte-rendu personnalisé</h1>
-        <p>Estimation des aides à la rénovation énergétique</p>
-      </div>
+    <div class="container">
       <div class="header">
-        <a href="https://www.revesta.fr" target="_blank" rel="noopener" title="revesta.fr">
-            <img src="images/Revesta_LogoTextuel-Blanc.png" alt="REVESTA Logo" class="logo">
+        <a href="https://www.revesta.fr" target="_blank" rel="noopener">
+          <img src="images/Revesta_LogoTextuel-Blanc.png" alt="REVESTA Logo" class="logo">
         </a>
-        <p>Renseignez vos informations pour obtenir des résultats personnalisés.</p>
-      </div>
-      
-      <!-- Body -->
-      <div class="email-body">
-        <!-- Greeting -->
-        <div class="greeting">
-          <p>Bonjour <strong>{{PRENOM}} {{NOM}}</strong>,</p>
-          <p>Voici le compte-rendu détaillé des aides à la rénovation énergétique disponibles pour votre projet immobilier.</p>
-        </div>
-        
-        <!-- Property Details -->
-        <div class="property-section">
-          <h2>🏠 Votre bien immobilier</h2>
-          <div class="property-details">
-            <div class="property-item">
-              <span class="property-label">Titre</span>
-              <span class="property-value">{{TITRE}}</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Prix</span>
-              <span class="property-value">{{PRIX}} €</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Surface</span>
-              <span class="property-value">{{SURFACE}} m²</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Localisation</span>
-              <span class="property-value">{{LOCALISATION}}</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Prix au m²</span>
-              <span class="property-value">{{PRIX_M2}} €/m²</span>
-            </div>
-          </div>
-        </div>
-          
-        <!-- Estimate -->
-        <div class="estimate-section">
-          <h2>💰 Estimation totale des subventions</h2>
-          <div class="estimate-amount">{{MONTANT_TOTAL}} €</div>
-          <div class="estimate-percent">Soit {{POURCENTAGE}}% du prix du bien !</div>
-        </div>
-        
-        <!-- Aides List -->
-        <div class="aides-section">
-          <h2>🏦 Aides disponibles</h2>
-          
-          <!-- Aide Item Template - Repeat for each aide -->
-          {{AIDES_LIST}}
-          <!-- Example:
-          <div class="aide-item">
-              <h3>MaPrimeRénov' parcours accompagné</h3>
-              <p>Subventions • Jusqu'à 24 000 €</p>
-          </div>
-          -->
-        </div>
-        
-        <!-- Info Section -->
-        <div class="info-section">
-          <h3>ℹ️ Prochaines étapes</h3>
-          <p>
-              Ces estimations sont basées sur votre profil et les caractéristiques du bien. 
-              Pour obtenir des montants précis et démarrer vos démarches, nous vous recommandons 
-              de consulter un conseiller France Rénov' ou de visiter le site officiel Mes Aides Réno.
-          </p>
-        </div>
-          
-        <!-- CTA -->
-        <div style="text-align: center;">
-          <a href="https://mesaidesreno.beta.gouv.fr/" class="cta-button">
-            Découvrir Mes Aides Réno
+        <div class="social-links">
+          <a href="https://www.facebook.com/revesta.fr" target="_blank" rel="noopener" title="Facebook">
+            <i class='bx bxl-facebook-circle'></i>
+          </a>
+          <a href="https://www.instagram.com/revesta.fr" target="_blank" rel="noopener" title="Instagram">
+            <i class='bx bxl-instagram-alt'></i>
+          </a>
+          <a href="https://www.linkedin.com/company/re-vesta/" target="_blank" rel="noopener" title="LinkedIn">
+            <i class='bx bxl-linkedin-square' ></i>
           </a>
         </div>
       </div>
-      
-      <!-- Footer -->
-      <div class="email-footer">
-        <p>Ce compte-rendu a été généré par l'extension Revesta</p>
-        <p>Pour plus d'informations : <a href="https://mesaidesreno.beta.gouv.fr/">Mes Aides Réno</a> | <a href="https://france-renov.gouv.fr/">France Rénov'</a></p>
-        
-        <div class="social-links">
-          <a href="#" title="Facebook">📘</a>
-          <a href="#" title="Twitter">🐦</a>
-          <a href="#" title="LinkedIn">💼</a>
-        </div>
-        
-        <p style="margin-top: 15px; font-size: 11px;">
-          © 2025 Revesta. Tous droits réservés.
-        </p>
+      <div class="welcome-section">
+        <p>Hello, Alexandre !&nbsp;&#x1F44B;</p>
+        <h1>Votre projet d'achat</h1>
       </div>
-    </div>
+      <div class="property-section">
+        <!-- Informations basique du bien -->
+        <div class="property-card">
+          <img src="https://img.leboncoin.fr/api/v1/lbcpb1/images/de/5d/aa/de5daa7f48e28b030acd46b5d0224ef7c3fd3923.jpg?rule=classified-1200x800-webp">
+          <div class="property-info">
+            <div class="property-title">
+              <i class='bx bx-building-house'></i>
+              <div class="title-text">
+                <h2>Appartement 3 pièces</h2>
+                <p>Trélazé (49700) &bull; 80 m²</p>
+              </div>
+            </div>
+            <a href="https://www.leboncoin.fr/ad/ventes_immobilieres/3071187960">
+              <i class='bx bx-link'></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Informations de l'analyse -->
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <h3>171 400 €</h3>
+            <p>Coût d'acquisition du bien</p>
+          </div>
+          <div class="analysis-footer">
+            <p>&#x1F4B0;&nbsp;Subventions estimées &bull; Soit 11 % du bien !</p>
+            <h3>18 800 €</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informations financières -->
+      <div class="financial-card">
+        <h2>&#x1F3E6;&ensp;Votre plan financier</h2>
+        <div>
+          <div class="financial-details">
+            <div class="financial-item">
+              <span>&#x1F528;</span>
+              <h3>50 000 €</h3>
+              <p>Votre budget réno'</p>
+            </div>
+            <div class="financial-item">
+              <span>&#x1F3E0;</span>
+              <h3>221 400 €</h3>
+              <p>Acquisition + travaux</p>
+            </div>
+            <div class="financial-item total">
+              <span>&#x2728;</span>
+              <h3>203 400 €</h3>
+              <p>Total (aides déduites)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Calcul du DPE
+      <div class="dpe-card">
+        <div class="dpe-info">
+          <div class="dpe-transition">
+            <div class="dpe-before">
+              <span style="background-color: #FFCA00;">E</span>
+              <p>Avant travaux</p>
+            </div>
+            <i class="bx bx-chevron-right"></i>
+            <div class="dpe-after">
+              <span style="background-color: #52B153;">B</span>
+              <p>Après travaux</p>
+            </div>
+          </div>
+          <div class="dpe-bar">
+            <span style="background-color: #00A06D;">A</span>
+            <span style="background-color: #52B153;">B</span>
+            <span style="background-color: #A5CC74;">C</span>
+            <span style="background-color: #F4E70F;">D</span>
+            <span style="background-color: #FFCA00;">E</span>
+            <span style="background-color: #EB8235;">F</span>
+            <span style="background-color: #D7221F;">G</span>
+          </div>
+        </div>
+        <div class="dpe-savings">
+          <i class='bx bx-leaf'></i>
+          <p>Économie estimée : 1 200 € / an</p>
+        </div>
+      </div> -->
   </body>
 </html>
