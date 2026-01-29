@@ -44,7 +44,7 @@
   "options_page": "options.html",
   "web_accessible_resources": [
     {
-      "resources": ["js/injected.js"],
+      "resources": ["js/injected.js", "email.html"],
       "matches": ["<all_urls>"]
     }
   ]

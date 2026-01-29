@@ -23,5 +23,7 @@
     "france",
     "leboncoin"
   ],
-  "devDependencies": {}
+  "devDependencies": {
+    "juice": "^11.1.0"
+  }
 }
