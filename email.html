@@ -1,694 +1,733 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="images/icon-128.png" type="image/png">
-    <title>REVESTA - Compte-rendu de votre projet immobilier</title>
-    <link rel="stylesheet" href="styles/email.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-</head>
-<body>
-    <!-- En-tête -->
-    <header>
-        <a href="https://www.revesta.fr" target="_blank" rel="noopener">
-            <img src="images/Revesta_LogoTextuel-Blanc.png" alt="REVESTA Logo" class="logo">
-        </a>
-        <div class="social-links">
-            <a href="https://www.facebook.com/revesta.fr" target="_blank" rel="noopener" title="Facebook">
-                <i class='bx bxl-facebook-circle'></i>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="images/icon-128.png" type="image/png">
+        <title>REVESTA - Compte-rendu de votre projet immobilier</title>
+        <link rel="stylesheet" href="styles/email.css">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    </head>
+    <body>
+        <!-- En-tête -->
+        <header>
+            <a href="https://www.revesta.fr" target="_blank" rel="noopener">
+                <img src="images/Revesta_LogoTextuel-Blanc.png" alt="REVESTA Logo" class="logo">
             </a>
-            <a href="https://www.instagram.com/revesta.fr" target="_blank" rel="noopener" title="Instagram">
-                <i class='bx bxl-instagram-alt'></i>
-            </a>
-            <a href="https://www.linkedin.com/company/re-vesta/" target="_blank" rel="noopener" title="LinkedIn">
-                <i class='bx bxl-linkedin-square' ></i>
-            </a>
-        </div>
-    </header>
-
-    <!-- Salutation -->
-    <section class="welcome-section">
-        <p>Hello Alexandre !&ensp;&#x1F44B;</p>
-        <h2>Votre projet d'achat immobilier</h2>
-        <p>Voici le compte-rendu détaillé des aides disponibles pour votre projet.</p>
-    </section>
-
-    <!-- Informations sur le bien immobilier -->
-    <section class="property-section">
-        <!-- Informations basique du bien -->
-        <div class="property-card">
-            <a 
-                href="https://www.leboncoin.fr/ad/ventes_immobilieres/3071187960" 
-                target="_blank" 
-                rel="noopener"
-                title="Voir l'annonce du bien"
-            >
-                <img src="https://img.leboncoin.fr/api/v1/lbcpb1/images/de/5d/aa/de5daa7f48e28b030acd46b5d0224ef7c3fd3923.jpg?rule=classified-1200x800-webp">
-            </a>
-            <div class="property-info">
-                <h2>165 160 €</h2>
-                <p>Appartement 3 pièces &bull; 2 065 €/m²</p>
+            <div class="social-links">
+                <a href="https://www.facebook.com/revesta.fr" target="_blank" rel="noopener" title="Facebook">
+                    <i class='bx bxl-facebook-circle'></i>
+                </a>
+                <a href="https://www.instagram.com/revesta.fr" target="_blank" rel="noopener" title="Instagram">
+                    <i class='bx bxl-instagram-alt'></i>
+                </a>
+                <a href="https://www.linkedin.com/company/re-vesta/" target="_blank" rel="noopener" title="LinkedIn">
+                    <i class='bx bxl-linkedin-square' ></i>
+                </a>
             </div>
-        </div>
+        </header>
 
-        <!-- Informations de l'analyse -->
-        <div class="analysis-card">
-            <h2>&#x1F3E0;&ensp;Le bien immobilier</h2>
-            <div class="analysis-item">
-                <span class="analysis-label">&#x1F4CD;&ensp;Commune</span>
-                <span class="analysis-value">49800 - Trélazé</span>
-            </div>
-            <div class="analysis-item">
-                <span class="analysis-label">&#x1F3E2;&ensp;Type</span>
-                <span class="analysis-value">Appartement</span>
-            </div>
-            <div class="analysis-item">
-                <span class="analysis-label">&#x1F6AA;&ensp;Nombre de pièces</span>
-                <span class="analysis-value">3 pièces</span>
-            </div>
-            <div class="analysis-item">
-                <span class="analysis-label">&#x1F4D0;&ensp;Surface</span>
-                <span class="analysis-value">80 m²</span>
-            </div>
-            <div class="analysis-item">
-                <span class="analysis-label">&#x1F525;&ensp;Mode de chauffage</span>
-                <span class="analysis-value">Gaz (collectif)</span>
-            </div>
-            <div class="analysis-item">
-                <span class="analysis-label">&#x231B;&ensp;Année de construction</span>
-                <span class="analysis-value">1975</span>
-            </div>
-        </div>
-    </section>
+        <!-- Salutation -->
+        <section class="welcome-section">
+            <p>Hello Alexandre !&ensp;&#x1F44B;</p>
+            <h2>Votre projet d'achat immobilier</h2>
+            <p>Voici le compte-rendu détaillé des aides disponibles pour votre projet.</p>
+        </section>
 
-    <!-- Votre profil -->
-    <section class="infos-section">
-        <h2>&#x1F464;&ensp;Mon profil</h2>
-        <div class="list-item">
-            <span class="list-label">&#x1F3E1;&ensp;Mon futur statut</span>
-            <span class="list-value">Propriétaire occupant</span>
-        </div>
-        <div class="list-item">
-            <span class="list-label">&#x1F46A;&ensp;Composition de mon ménage</span>
-            <span class="list-value">2 personnes</span>
-        </div>
-        <div class="list-item">
-            <span class="list-label">&#x1F4B8;&ensp;Mes revenus annuels</span>
-            <span class="list-value">38 000 € / an</span>
-        </div>
-        <div class="list-item">
-            <span class="list-label">&#x1F3E0;&ensp;Résidence principale</span>
-            <span class="list-value">Oui</span>
-        </div>
-        <div class="list-item">
-            <span class="list-label">&#x1F4C5;&ensp;Période de construction du logement</span>
-            <span class="list-value">Au moins 15 ans</span>
-        </div>
-    </section>
-
-    <!-- Plan financier -->
-    <section class="infos-section">
-        <h2>&#x1F4B0;&ensp;Mon plan financier</h2>
-        
-        <div class="financial-summary">
-            <div class="financial-details">
-                <h3>Coûts de votre projet</h3>
-                <ul>
-                    <li>
-                        <span class="financial-label">&#x1F3E0;&ensp;Prix d'acquisition de votre bien</span>
-                        <span class="financial-value">165 160 €</span>
-                    </li>
-                    <li>
-                        <span class="financial-label">&#x1F528;&ensp;Votre budget travaux réno'</span>
-                        <span class="financial-value">40 000 €</span>
-                    </li>
-                    <li>
-                        <span class="financial-label">&#x1F4CA;&ensp;Coût total de votre projet</span>
-                        <span class="financial-value">205 160 €</span>
-                        <span class="financial-label">(acquisition + travaux)</span>
-                    </li>
-                </ul>
-            </div>
-            <div class="financial-details">
-                <!-- Graphique répartition des coûts -->
-                <h3>Répartition de ces coûts</h3>
-                <canvas id="costChart"></canvas>
-            </div>
-        </div>
-
-        <div class="financial-summary-alt">
-            
-            
-            <div class="financial-details-alt">
-                <h3>Coût <u>net</u> de mon projet après aides</h3>
-                <ul>
-                    <li>
-                        <span class="financial-label">&#x1F389;&ensp;Subvensions déduites</span>
-                        <span class="financial-value" id="savings">- 29 000 €</span>
-                    </li>
-                    <li>
-                        <span class="financial-label">&#x2728;&ensp;Coût total après déduction des aides</span>
-                        <span class="financial-value" id="final-cost"><u>176 160</u> €</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="financial-details-alt">
-                <!-- Graphique comparaison avant/après aides -->
-                <h3>Impact des aides sur votre projet</h3>
-                <canvas id="aidesImpactChart"></canvas>
-            </div>  
-
-            <div class="financial-details-alt">
-                <h3>Vos aides financières</h3>
-                <ul>
-                    <li>
-                        <span class="financial-label">&#x1F4B3;&ensp;Reste à charge travaux</span>
-                        <span class="financial-value">11 000 €</span>
-                    </li>
-                    <li>
-                        <span class="financial-label">&#x1F4C8;&ensp;Couverture des travaux</span>
-                        <span class="financial-value">72.5%</span>
-                    </li>
-                    <li>
-                        <span class="financial-label">&#x2705;&ensp;Aides éligibles</span>
-                        <span class="financial-value">3</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- Détail des aides disponibles -->
-    <section class="infos-section">
-        <h2>&#x1F3E6;&ensp;Aides disponibles pour votre projet</h2>
-
-        <!-- Liste dynamique des aides -->
-        <div class="aide-list">
-            <div class="aide-subvention">
-                <article class="aide-info">
-                    <div class="aide-name">
-                        <h3>MaPrimeRénov' parcours accompagné</h3>
-                        <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4C4;&ensp;Type</span>
-                        <span class="list-value"><u>Subvention</u></span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4B0;&ensp;Montant estimé</span>
-                        <span class="list-value">24 000 €</span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4D6;&ensp;Description</span>
-                        <span class="list-value">Aide pour la rénovation énergétique d'ampleur</span>
-                    </div>
-                </article>
-
-                <article class="aide-info">
-                    <div class="aide-name">
-                        <h3>Certificats d'économies d'énergie (CEE)</h3>
-                        <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4C4;&ensp;Type</span>
-                        <span class="list-value"><u>Subvention</u></span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4B0;&ensp;Montant estimé</span>
-                        <span class="list-value">5 000 €</span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4D6;&ensp;Description</span>
-                        <span class="list-value">Prime énergie pour travaux d'économie d'énergie</span>
-                    </div>
-                </article>
-            </div>
-
-            <div class="aide-pret">
-                <article class="aide-info">
-                    <div class="aide-name">
-                        <h3>Éco-prêt à taux zéro (Éco-PTZ)</h3>
-                        <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4C4;&ensp;Type</span>
-                        <span class="list-value"><u>Prêt</u></span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4B0;&ensp;Montant estimé</span>
-                        <span class="list-value">50 000 €</span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4D6;&ensp;Description</span>
-                        <span class="list-value">Taux à 0% - Durée : 20 ans - Jusqu'à 50 000 €</span>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- Économies d'énergie estimées -->
-    <section class="infos-section">
-        <h2>&#x1F343;&ensp;Économies d'énergie estimées</h2>
-        
-        <!-- DPE Avant/Après -->
-        <div class="dpe-comparison">
-            <div class="dpe-container">
-                <h3>DPE Actuel</h3>
-                <div class="dpe-scale">
-                    <div class="dpe-item dpe-a">
-                        <span class="dpe-letter">A</span>
-                        <span class="dpe-range">≤ 50</span>
-                    </div>
-                    <div class="dpe-item dpe-b">
-                        <span class="dpe-letter">B</span>
-                        <span class="dpe-range">51 à 90</span>
-                    </div>
-                    <div class="dpe-item dpe-c">
-                        <span class="dpe-letter">C</span>
-                        <span class="dpe-range">91 à 150</span>
-                    </div>
-                    <div class="dpe-item dpe-d">
-                        <span class="dpe-letter">D</span>
-                        <span class="dpe-range">151 à 230</span>
-                    </div>
-                    <div class="dpe-item dpe-e active">
-                        <span class="dpe-letter">E</span>
-                        <span class="dpe-indicator">280 kWh/m²/an &#x25B6;</span>
-                        <span class="dpe-range">231 à 330</span>
-                    </div>
-                    <div class="dpe-item dpe-f">
-                        <span class="dpe-letter">F</span>
-                        <span class="dpe-range">331 à 450</span>
-                    </div>
-                    <div class="dpe-item dpe-g">
-                        <span class="dpe-letter">G</span>
-                        <span class="dpe-range">&gt; 450</span>
-                    </div>
+        <!-- Informations sur le bien immobilier -->
+        <section class="property-section">
+            <!-- Informations basique du bien -->
+            <div class="property-card">
+                <a 
+                    href="https://www.leboncoin.fr/ad/ventes_immobilieres/3071187960" 
+                    target="_blank" 
+                    rel="noopener"
+                    title="Voir l'annonce du bien"
+                >
+                    <img src="https://img.leboncoin.fr/api/v1/lbcpb1/images/de/5d/aa/de5daa7f48e28b030acd46b5d0224ef7c3fd3923.jpg?rule=classified-1200x800-webp">
+                </a>
+                <div class="property-info">
+                    <h2>165 160 €</h2>
+                    <p>Appartement 3 pièces &bull; 2 065 €/m²</p>
                 </div>
             </div>
 
-            <div class="dpe-arrow">&#x2192;</div>
+            <!-- Informations de l'analyse -->
+            <div class="analysis-card">
+                <h2>&#x1F3E0;&ensp;Le bien immobilier</h2>
+                <div class="analysis-item">
+                    <span class="analysis-label">&#x1F4CD;&ensp;Commune</span>
+                    <span class="analysis-value">49800 - Trélazé</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">&#x1F3E2;&ensp;Type</span>
+                    <span class="analysis-value">Appartement</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">&#x1F6AA;&ensp;Nombre de pièces</span>
+                    <span class="analysis-value">3 pièces</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">&#x1F4D0;&ensp;Surface</span>
+                    <span class="analysis-value">80 m²</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">&#x1F525;&ensp;Mode de chauffage</span>
+                    <span class="analysis-value">Gaz (collectif)</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">&#x231B;&ensp;Année de construction</span>
+                    <span class="analysis-value">1975</span>
+                </div>
+            </div>
+        </section>
 
-            <div class="dpe-container">
-                <h3>DPE Visé</h3>
-                <div class="dpe-scale">
-                    <div class="dpe-item dpe-a">
-                        <span class="dpe-letter">A</span>
-                        <span class="dpe-range">≤ 50</span>
+        <!-- Votre profil -->
+        <section class="infos-section">
+            <h2>&#x1F464;&ensp;Mon profil</h2>
+            <div class="list-item">
+                <span class="list-label">&#x1F3E1;&ensp;Mon futur statut</span>
+                <span class="list-value">Propriétaire occupant</span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">&#x1F46A;&ensp;Composition de mon ménage</span>
+                <span class="list-value">2 personnes</span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">&#x1F4B8;&ensp;Mes revenus annuels</span>
+                <span class="list-value">38 000 € / an</span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">&#x1F3E0;&ensp;Résidence principale</span>
+                <span class="list-value">Oui</span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">&#x1F4C5;&ensp;Période de construction du logement</span>
+                <span class="list-value">Au moins 15 ans</span>
+            </div>
+        </section>
+
+        <!-- Plan financier -->
+        <section class="infos-section">
+            <h2>&#x1F4B0;&ensp;Mon plan financier</h2>
+            
+            <div class="financial-summary">
+                <div class="financial-details">
+                    <h3>Coûts de votre projet</h3>
+                    <ul>
+                        <li>
+                            <span class="financial-label">&#x1F3E0;&ensp;Prix d'acquisition de votre bien</span>
+                            <span class="financial-value">165 160 €</span>
+                        </li>
+                        <li>
+                            <span class="financial-label">&#x1F528;&ensp;Votre budget travaux réno'</span>
+                            <span class="financial-value">40 000 €</span>
+                        </li>
+                        <li>
+                            <span class="financial-label">&#x1F4CA;&ensp;Coût total de votre projet</span>
+                            <span class="financial-value">205 160 €</span>
+                            <span class="financial-label">(acquisition + travaux)</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="financial-details">
+                    <!-- Graphique répartition des coûts -->
+                    <h3>Répartition de ces coûts</h3>
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+
+            <div class="financial-summary-alt">
+                
+                
+                <div class="financial-details-alt">
+                    <h3>Coût <u>net</u> de mon projet après aides</h3>
+                    <ul>
+                        <li>
+                            <span class="financial-label">&#x1F389;&ensp;Subvensions déduites</span>
+                            <span class="financial-value" id="savings">- 29 000 €</span>
+                        </li>
+                        <li>
+                            <span class="financial-label">&#x2728;&ensp;Coût total après déduction des aides</span>
+                            <span class="financial-value" id="final-cost"><u>176 160</u> €</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="financial-details-alt">
+                    <!-- Graphique comparaison avant/après aides -->
+                    <h3>Impact des aides sur votre projet</h3>
+                    <canvas id="aidesImpactChart"></canvas>
+                </div>  
+
+                <div class="financial-details-alt">
+                    <h3>Vos aides financières</h3>
+                    <ul>
+                        <li>
+                            <span class="financial-label">&#x1F4B3;&ensp;Reste à charge travaux</span>
+                            <span class="financial-value">11 000 €</span>
+                        </li>
+                        <li>
+                            <span class="financial-label">&#x1F4C8;&ensp;Couverture des travaux</span>
+                            <span class="financial-value">72.5%</span>
+                        </li>
+                        <li>
+                            <span class="financial-label">&#x2705;&ensp;Aides éligibles</span>
+                            <span class="financial-value">3</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Détail des aides disponibles -->
+        <section class="infos-section">
+            <h2>&#x1F3E6;&ensp;Aides disponibles pour votre projet</h2>
+
+            <!-- Liste dynamique des aides -->
+            <div class="aide-list">
+                <div class="aide-subvention">
+                    <article class="aide-info">
+                        <div class="aide-name">
+                            <h3>MaPrimeRénov' parcours accompagné</h3>
+                            <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4C4;&ensp;Type</span>
+                            <span class="list-value"><u>Subvention</u></span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4B0;&ensp;Montant estimé</span>
+                            <span class="list-value">24 000 €</span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4D6;&ensp;Description</span>
+                            <span class="list-value">Aide pour la rénovation énergétique d'ampleur</span>
+                        </div>
+                    </article>
+
+                    <article class="aide-info">
+                        <div class="aide-name">
+                            <h3>Certificats d'économies d'énergie (CEE)</h3>
+                            <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4C4;&ensp;Type</span>
+                            <span class="list-value"><u>Subvention</u></span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4B0;&ensp;Montant estimé</span>
+                            <span class="list-value">5 000 €</span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4D6;&ensp;Description</span>
+                            <span class="list-value">Prime énergie pour travaux d'économie d'énergie</span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="aide-pret">
+                    <article class="aide-info">
+                        <div class="aide-name">
+                            <h3>Éco-prêt à taux zéro (Éco-PTZ)</h3>
+                            <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4C4;&ensp;Type</span>
+                            <span class="list-value"><u>Prêt</u></span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4B0;&ensp;Montant estimé</span>
+                            <span class="list-value">50 000 €</span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4D6;&ensp;Description</span>
+                            <span class="list-value">Taux à 0% - Durée : 20 ans - Jusqu'à 50 000 €</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Économies d'énergie estimées -->
+        <section class="infos-section">
+            <h2>&#x1F343;&ensp;Économies d'énergie estimées</h2>
+            
+            <!-- DPE Avant/Après -->
+            <div class="dpe-comparison">
+                <div class="dpe-container">
+                    <h3>DPE Actuel</h3>
+                    <div class="dpe-scale">
+                        <div class="dpe-item dpe-a">
+                            <span class="dpe-letter">A</span>
+                            <span class="dpe-range">≤ 50</span>
+                        </div>
+                        <div class="dpe-item dpe-b">
+                            <span class="dpe-letter">B</span>
+                            <span class="dpe-range">51 à 90</span>
+                        </div>
+                        <div class="dpe-item dpe-c">
+                            <span class="dpe-letter">C</span>
+                            <span class="dpe-range">91 à 150</span>
+                        </div>
+                        <div class="dpe-item dpe-d">
+                            <span class="dpe-letter">D</span>
+                            <span class="dpe-range">151 à 230</span>
+                        </div>
+                        <div class="dpe-item dpe-e active">
+                            <span class="dpe-letter">E</span>
+                            <span class="dpe-indicator">280 kWh/m²/an &#x25B6;</span>
+                            <span class="dpe-range">231 à 330</span>
+                        </div>
+                        <div class="dpe-item dpe-f">
+                            <span class="dpe-letter">F</span>
+                            <span class="dpe-range">331 à 450</span>
+                        </div>
+                        <div class="dpe-item dpe-g">
+                            <span class="dpe-letter">G</span>
+                            <span class="dpe-range">&gt; 450</span>
+                        </div>
                     </div>
-                    <div class="dpe-item dpe-b">
-                        <span class="dpe-letter">B</span>
-                        <span class="dpe-range">51 à 90</span>
-                    </div>
-                    <div class="dpe-item dpe-c active">
-                        <span class="dpe-letter">C</span>
-                        <span class="dpe-indicator">120 kWh/m²/an &#x25B6;</span>
-                        <span class="dpe-range">91 à 150</span>
-                    </div>
-                    <div class="dpe-item dpe-d">
-                        <span class="dpe-letter">D</span>
-                        <span class="dpe-range">151 à 230</span>
-                    </div>
-                    <div class="dpe-item dpe-e">
-                        <span class="dpe-letter">E</span>
-                        <span class="dpe-range">231 à 330</span>
-                    </div>
-                    <div class="dpe-item dpe-f">
-                        <span class="dpe-letter">F</span>
-                        <span class="dpe-range">331 à 450</span>
-                    </div>
-                    <div class="dpe-item dpe-g">
-                        <span class="dpe-letter">G</span>
-                        <span class="dpe-range">&gt; 450</span>
+                </div>
+
+                <div class="dpe-arrow">&#x2192;</div>
+
+                <div class="dpe-container">
+                    <h3>DPE Visé</h3>
+                    <div class="dpe-scale">
+                        <div class="dpe-item dpe-a">
+                            <span class="dpe-letter">A</span>
+                            <span class="dpe-range">≤ 50</span>
+                        </div>
+                        <div class="dpe-item dpe-b">
+                            <span class="dpe-letter">B</span>
+                            <span class="dpe-range">51 à 90</span>
+                        </div>
+                        <div class="dpe-item dpe-c active">
+                            <span class="dpe-letter">C</span>
+                            <span class="dpe-indicator">120 kWh/m²/an &#x25B6;</span>
+                            <span class="dpe-range">91 à 150</span>
+                        </div>
+                        <div class="dpe-item dpe-d">
+                            <span class="dpe-letter">D</span>
+                            <span class="dpe-range">151 à 230</span>
+                        </div>
+                        <div class="dpe-item dpe-e">
+                            <span class="dpe-letter">E</span>
+                            <span class="dpe-range">231 à 330</span>
+                        </div>
+                        <div class="dpe-item dpe-f">
+                            <span class="dpe-letter">F</span>
+                            <span class="dpe-range">331 à 450</span>
+                        </div>
+                        <div class="dpe-item dpe-g">
+                            <span class="dpe-letter">G</span>
+                            <span class="dpe-range">&gt; 450</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="financial-details-alt">
-            <h3>Impacts positifs de votre rénovation</h3>
-            <ul>
-                <li>
-                    <span class="financial-label">&#x1F4B3;&ensp;Économies sur vos factures d'énergie</span>
-                    <span class="financial-value">&#x7E; 1 250 € / an</span>
-                </li>
-                <li>
-                    <span class="financial-label">&#x1F343;&ensp;Réduction de vos émissions de CO&#8322;</span>
-                    <span class="financial-value">&#x7E; 237 kg / an</span>
-                </li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- Types de travaux envisagés -->
-    <section class="infos-section">
-        <h2>&#x1F528;&ensp;Types de travaux envisagés</h2>
-        <div class="list-item-alt">
-            <ul>
-                <li>
-                    <span class="list-label-alt">Isolation thermique</span>
-                    <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                </li>
-                <li>
-                    <span class="list-label-alt">Changement du système de chauffage</span>
-                    <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                </li>
-                <li>
-                    <span class="list-label-alt">Menuiseries (fenêtres/portes)</span>
-                    <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                </li>
-                <li>
-                    <span class="list-label-alt">Rénovation énergétique globale</span>
-                    <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                </li>
-                <li>
-                    <span class="list-label-alt">Énergies renouvelables</span>
-                    <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                </li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- Informations complémentaires sur le financement -->
-    <section class="infos-section">
-        <h2>&#x1F4CA;&ensp;Informations complémentaires</h2>
-        <div class="aide-list">
-            <div class="aide-subvention">
-                <article class="aide-info">
-                    <div class="aide-name">
-                        <h3>Fiscalité</h3>
-                        <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4B8;&ensp;Taxe foncière anuelle</span>
-                        <span class="list-value">2 750 €</span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4B0;&ensp;Exonération de taxe foncière possible</span>
-                        <span class="list-value">1 000 €</span>
-                    </div>
-                </article>
-                <article class="aide-info">
-                    <div class="aide-name">
-                        <h3>Parcours d'aide</h3>
-                        <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x1F4C4;&ensp;Type de parcours MaPrimeRénov'</span>
-                        <span class="list-value">Parcours accompagné (rénovation d'ampleur)</span>
-                    </div>
-                    <div class="list-item">
-                        <span class="list-label">&#x2753;&ensp;Accompagnement nécessaire</span>
-                        <span class="list-value">Oui</span>
-                    </div>
-                </article>
+            <div class="financial-details-alt">
+                <h3>Impacts positifs de votre rénovation</h3>
+                <ul>
+                    <li>
+                        <span class="financial-label">&#x1F4B3;&ensp;Économies sur vos factures d'énergie</span>
+                        <span class="financial-value">&#x7E; 1 250 € / an</span>
+                    </li>
+                    <li>
+                        <span class="financial-label">&#x1F343;&ensp;Réduction de vos émissions de CO&#8322;</span>
+                        <span class="financial-value">&#x7E; 237 kg / an</span>
+                    </li>
+                </ul>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Prochaines étapes -->
-    <section class="infos-section">
-        <h2>&#x1F4DD;&ensp;Prochaines étapes recommandées</h2>
-        <div class="list-item-alt">
-            <ul>
-                <li>
-                    <a href="https://www.economie.gouv.fr/particuliers/investir-dans-limmobilier/tout-savoir-sur-laudit-energetique" target="_blank" rel="noopener">
-                        <span class="list-label-alt">1. Faire <u>réaliser un audit énergétique complet</u> par un professionnel RGE.</span>
+        <!-- Types de travaux envisagés -->
+        <section class="infos-section">
+            <h2>&#x1F528;&ensp;Types de travaux envisagés</h2>
+            <div class="list-item-alt">
+                <ul>
+                    <li>
+                        <span class="list-label-alt">Isolation thermique</span>
                         <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://france-renov.gouv.fr/preparer-projet/trouver-conseiller" target="_blank" rel="noopener">
-                        <span class="list-label-alt">2. <u>Consulter un conseiller France Rénov'</u> afin de valider votre éligibilité aux aides.</span>
+                    </li>
+                    <li>
+                        <span class="list-label-alt">Changement du système de chauffage</span>
                         <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/R39412" target="_blank" rel="noopener">
-                        <span class="list-label-alt">3. <u>Comparer plusieurs devis</u> d'artisans RGE (Reconnu Garant de l'Environnement).</span>
+                    </li>
+                    <li>
+                        <span class="list-label-alt">Menuiseries (fenêtres/portes)</span>
                         <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.anah.gouv.fr/document/maprimerenov-mode-emploi" target="_blank" rel="noopener">
-                        <span class="list-label-alt">4. <u>Constituer votre dossier MaPrimeRénov'</u> avant le début des travaux.</span>
+                    </li>
+                    <li>
+                        <span class="list-label-alt">Rénovation énergétique globale</span>
                         <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.economie.gouv.fr/particuliers/faire-des-economies-denergie/renovation-energetique-les-aides-auxquelles-vous-pouvez-pretendre#" target="_blank" rel="noopener">
-                        <span class="list-label-alt">5. <u>Vérifier les conditions d'éligibilité aux aides</u> auprès des organismes concernés.</span>
+                    </li>
+                    <li>
+                        <span class="list-label-alt">Énergies renouvelables</span>
                         <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.economie.gouv.fr/particuliers/investir-dans-limmobilier/tout-savoir-sur-laudit-energetique" target="_blank" rel="noopener">
-                        <span class="list-label-alt">6. <u>Planifier vos travaux</u> selon les recommandations de l'audit énergétique.</span>
-                        <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </section>
+                    </li>
+                </ul>
+            </div>
+        </section>
 
-    <!-- Coordonnées et contact -->
-    <section class="infos-section">
-        <h2>&#x1F4E7;&ensp;Vos coordonnées</h2>
-        <div class="analysis-item">
-            <span class="analysis-label">&#x1F464;&ensp;NOM & Prénom</span>
-            <span class="analysis-value">RAGUIN Alexandre</span>
-        </div>
-        <div class="analysis-item">
-            <span class="analysis-label">&#x1F4EC;&ensp;Adresse mail</span>
-            <span class="analysis-value">alexandre.raguin49@gmail.com</span>
-        </div>
-        <div class="analysis-item">
-            <span class="analysis-label">&#x1F4DE;&ensp;Téléphone</span>
-            <span class="analysis-value">06 12 34 56 78</span>
-        </div>
-    </section>
+        <!-- Informations complémentaires sur le financement -->
+        <section class="infos-section">
+            <h2>&#x1F4CA;&ensp;Informations complémentaires</h2>
+            <div class="aide-list">
+                <div class="aide-subvention">
+                    <article class="aide-info">
+                        <div class="aide-name">
+                            <h3>Fiscalité</h3>
+                            <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4B8;&ensp;Taxe foncière anuelle</span>
+                            <span class="list-value">2 750 €</span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4B0;&ensp;Exonération de taxe foncière possible</span>
+                            <span class="list-value">1 000 €</span>
+                        </div>
+                    </article>
+                    <article class="aide-info">
+                        <div class="aide-name">
+                            <h3>Parcours d'aide</h3>
+                            <a href="#">En savoir plus <i class='bx bx-link-external'></i></a>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x1F4C4;&ensp;Type de parcours MaPrimeRénov'</span>
+                            <span class="list-value">Parcours accompagné (rénovation d'ampleur)</span>
+                        </div>
+                        <div class="list-item">
+                            <span class="list-label">&#x2753;&ensp;Accompagnement nécessaire</span>
+                            <span class="list-value">Oui</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
 
-    <!-- Avertissement et mentions légales -->
-    <section class="infos-section">
-        <h2>&#x2139;&#xFE0F;&ensp;Informations importantes</h2>
-        <div class="important-info">
+        <!-- Prochaines étapes -->
+        <section class="infos-section">
+            <h2>&#x1F4DD;&ensp;Prochaines étapes recommandées</h2>
+            <div class="list-item-alt">
+                <ul>
+                    <li>
+                        <a href="https://www.economie.gouv.fr/particuliers/investir-dans-limmobilier/tout-savoir-sur-laudit-energetique" target="_blank" rel="noopener">
+                            <span class="list-label-alt">1. Faire <u>réaliser un audit énergétique complet</u> par un professionnel RGE.</span>
+                            <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://france-renov.gouv.fr/preparer-projet/trouver-conseiller" target="_blank" rel="noopener">
+                            <span class="list-label-alt">2. <u>Consulter un conseiller France Rénov'</u> afin de valider votre éligibilité aux aides.</span>
+                            <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.service-public.gouv.fr/particuliers/vosdroits/R39412" target="_blank" rel="noopener">
+                            <span class="list-label-alt">3. <u>Comparer plusieurs devis</u> d'artisans RGE (Reconnu Garant de l'Environnement).</span>
+                            <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.anah.gouv.fr/document/maprimerenov-mode-emploi" target="_blank" rel="noopener">
+                            <span class="list-label-alt">4. <u>Constituer votre dossier MaPrimeRénov'</u> avant le début des travaux.</span>
+                            <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.economie.gouv.fr/particuliers/faire-des-economies-denergie/renovation-energetique-les-aides-auxquelles-vous-pouvez-pretendre#" target="_blank" rel="noopener">
+                            <span class="list-label-alt">5. <u>Vérifier les conditions d'éligibilité aux aides</u> auprès des organismes concernés.</span>
+                            <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.economie.gouv.fr/particuliers/investir-dans-limmobilier/tout-savoir-sur-laudit-energetique" target="_blank" rel="noopener">
+                            <span class="list-label-alt">6. <u>Planifier vos travaux</u> selon les recommandations de l'audit énergétique.</span>
+                            <span class="list-link-alt"><i class='bx bx-link-external'></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Coordonnées et contact -->
+        <section class="infos-section">
+            <h2>&#x1F4E7;&ensp;Vos coordonnées</h2>
+            <div class="analysis-item">
+                <span class="analysis-label">&#x1F464;&ensp;NOM & Prénom</span>
+                <span class="analysis-value">RAGUIN Alexandre</span>
+            </div>
+            <div class="analysis-item">
+                <span class="analysis-label">&#x1F4EC;&ensp;Adresse mail</span>
+                <span class="analysis-value">alexandre.raguin49@gmail.com</span>
+            </div>
+            <div class="analysis-item">
+                <span class="analysis-label">&#x1F4DE;&ensp;Téléphone</span>
+                <span class="analysis-value">06 12 34 56 78</span>
+            </div>
+        </section>
+
+        <!-- Avertissement et mentions légales -->
+        <section class="infos-section">
+            <h2>&#x2139;&#xFE0F;&ensp;Informations importantes</h2>
+            <div class="important-info">
+                <p>
+                    <u>Avertissement</u> : Ces estimations sont basées sur votre profil et les caractéristiques du bien renseignées. 
+                    Les montants indiqués sont des estimations et peuvent varier en fonction de nombreux facteurs (revenus exacts, nature précise des travaux, date de réalisation, etc.).
+                </p>
+                <p>
+                    Afin d'obtenir des montants précis et démarrer vos démarches officielles, nous vous recommandons vivement de :
+                </p>
+                <ul>
+                    <li>Consulter un conseiller <a href="https://france-renov.gouv.fr/" target="_blank" rel="noopener">France Rénov'</a> (service public gratuit),</li>
+                    <li>Visiter le site officiel <a href="https://mesaidesreno.beta.gouv.fr/" target="_blank" rel="noopener">Mes Aides Réno</a>,</li>
+                    <li>Contacter l'<a href="https://www.anah.gouv.fr/" target="_blank" rel="noopener">ANAH</a> (Agence Nationale de l'Habitat).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <h3>Merci d'avoir utilisé REVESTA !</h3>
             <p>
-                <u>Avertissement</u> : Ces estimations sont basées sur votre profil et les caractéristiques du bien renseignées. 
-                Les montants indiqués sont des estimations et peuvent varier en fonction de nombreux facteurs (revenus exacts, nature précise des travaux, date de réalisation, etc.).
+                Ce compte-rendu a été généré le <u>28/01/2026</u>.
+                <br>
+                REVESTA&copy; v1.0.0 &bull; Compte-rendu créé et élevé en France ! &#x1F1EB;&#x1F1F7; &bull; Circa 2025
             </p>
-            <p>
-                Afin d'obtenir des montants précis et démarrer vos démarches officielles, nous vous recommandons vivement de :
-            </p>
-            <ul>
-                <li>Consulter un conseiller <a href="https://france-renov.gouv.fr/" target="_blank" rel="noopener">France Rénov'</a> (service public gratuit),</li>
-                <li>Visiter le site officiel <a href="https://mesaidesreno.beta.gouv.fr/" target="_blank" rel="noopener">Mes Aides Réno</a>,</li>
-                <li>Contacter l'<a href="https://www.anah.gouv.fr/" target="_blank" rel="noopener">ANAH</a> (Agence Nationale de l'Habitat).</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <h3>Merci d'avoir utilisé REVESTA !</h3>
-        <p>
-            Ce compte-rendu a été généré le <u>28/01/2026</u>.
-            <br>
-            REVESTA&copy; v1.0.0 &bull; Compte-rendu créé et élevé en France ! &#x1F1EB;&#x1F1F7; &bull; Circa 2025
+        </footer>
+        <p class="privacy-note">
+            &#x1F512; Vos données personnelles sont sécurisées et ne sont jamais partagées sans votre accord explicite. 
+            Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données.
         </p>
-    </footer>
-    <p class="privacy-note">
-        &#x1F512; Vos données personnelles sont sécurisées et ne sont jamais partagées sans votre accord explicite. 
-        Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données.
-    </p>
-    <script>
-        // Graphique 1: Répartition des coûts (Doughnut)
-        const costCtx = document.getElementById('costChart').getContext('2d');
-        new Chart(costCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Prix d\'acquisition', 'Budget travaux'],
-                datasets: [{
-                    data: [165160, 40000],
-                    backgroundColor: [
-                        'rgba(11, 28, 19, 0.8)',
-                        'rgba(164, 197, 32, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(11, 28, 19, 1)',
-                        'rgba(164, 197, 32, 1)'
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            font: {
-                                size: 14
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += new Intl.NumberFormat('fr-FR', {
-                                    style: 'currency',
-                                    currency: 'EUR',
-                                    maximumFractionDigits: 0
-                                }).format(context.parsed);
-                                return label;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Graphique 2: Comparaison avant/après aides (Bar)
-        const impactCtx = document.getElementById('aidesImpactChart').getContext('2d');
-        new Chart(impactCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Coût du projet'],
-                datasets: [
-                    {
-                        label: 'Sans les aides',
-                        data: [205160],
-                        backgroundColor: 'rgba(102, 102, 102, 0.7)',
-                        borderColor: 'rgba(102, 102, 102, 1)',
+        <script>
+            // Graphique 1: Répartition des coûts (Doughnut)
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            new Chart(costCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Prix d\'acquisition', 'Budget travaux'],
+                    datasets: [{
+                        data: [165160, 40000],
+                        backgroundColor: [
+                            'rgba(11, 28, 19, 0.8)',
+                            'rgba(164, 197, 32, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(11, 28, 19, 1)',
+                            'rgba(164, 197, 32, 1)'
+                        ],
                         borderWidth: 2
-                    },
-                    {
-                        label: 'Avec les aides',
-                        data: [176160],
-                        backgroundColor: 'rgba(11, 28, 19, 0.7)',
-                        borderColor: 'rgba(11, 28, 19, 1)',
-                        borderWidth: 2
-                    },
-                    {
-                        label: 'Économie réalisée',
-                        data: [29000],
-                        backgroundColor: 'rgba(164, 197, 32, 0.7)',
-                        borderColor: 'rgba(164, 197, 32, 1)',
-                        borderWidth: 2
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return new Intl.NumberFormat('fr-FR', {
-                                    style: 'currency',
-                                    currency: 'EUR',
-                                    maximumFractionDigits: 0
-                                }).format(value);
-                            }
-                        }
-                    }
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 15,
-                            font: {
-                                size: 13
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14
                                 }
-                                label += new Intl.NumberFormat('fr-FR', {
-                                    style: 'currency',
-                                    currency: 'EUR',
-                                    maximumFractionDigits: 0
-                                }).format(context.parsed.y);
-                                return label;
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat('fr-FR', {
+                                        style: 'currency',
+                                        currency: 'EUR',
+                                        maximumFractionDigits: 0
+                                    }).format(context.parsed);
+                                    return label;
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
-    </script>
+            });
 
-    <!-- Variables disponibles (pour référence technique) -->
-    <!--
-    Variables du bien immobilier :
-    - {{TITRE}} : Titre de l'annonce
-    - {{TYPE_LOGEMENT}} : appartement / maison
-    - {{VILLE}} : Nom de la ville
-    - {{CODE_POSTAL}} : Code postal (5 chiffres)
-    - {{SURFACE}} : Surface en m²
-    - {{NB_PIECES}} : Nombre de pièces
-    - {{PRIX}} : Prix d'acquisition en €
-    - {{PRIX_M2}} : Prix au m² en €
-    - {{URL_ANNONCE}} : Lien vers l'annonce
-    - {{DPE_ACTUEL}} : Classe DPE actuelle (A-G)
-    - {{DPE_VISE}} : Classe DPE visée (A-G)
-    - {{GAIN_CLASSES}} : Nombre de classes gagnées
+            // Graphique 2: Comparaison avant/après aides (Bar)
+            const impactCtx = document.getElementById('aidesImpactChart').getContext('2d');
+            new Chart(impactCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Coût du projet'],
+                    datasets: [
+                        {
+                            label: 'Sans les aides',
+                            data: [205160],
+                            backgroundColor: 'rgba(102, 102, 102, 0.7)',
+                            borderColor: 'rgba(102, 102, 102, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Avec les aides',
+                            data: [176160],
+                            backgroundColor: 'rgba(11, 28, 19, 0.7)',
+                            borderColor: 'rgba(11, 28, 19, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Économie réalisée',
+                            data: [29000],
+                            backgroundColor: 'rgba(164, 197, 32, 0.7)',
+                            borderColor: 'rgba(164, 197, 32, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('fr-FR', {
+                                        style: 'currency',
+                                        currency: 'EUR',
+                                        maximumFractionDigits: 0
+                                    }).format(value);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += new Intl.NumberFormat('fr-FR', {
+                                        style: 'currency',
+                                        currency: 'EUR',
+                                        maximumFractionDigits: 0
+                                    }).format(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
 
-    Variables du profil utilisateur :
-    - {{NOM}} : Nom de l'utilisateur
-    - {{PRENOM}} : Prénom de l'utilisateur
-    - {{EMAIL}} : Email de l'utilisateur
-    - {{STATUT}} : propriétaire / bailleur
-    - {{NB_PERSONNES}} : Nombre de personnes du ménage
-    - {{REVENUS}} : Revenus annuels du ménage en €
-    - {{RESIDENCE_PRINCIPALE}} : oui / non
-    - {{PERIODE_CONSTRUCTION}} : au moins 15 ans / autre
+        <!-- Variables disponibles (pour référence technique) -->
+        <!--
+        ==========================================
+        VARIABLES DU BIEN IMMOBILIER
+        ==========================================
+        - {{TITRE}} : Titre de l'annonce
+        - {{TYPE_LOGEMENT}} : Appartement / Maison
+        - {{VILLE}} : Nom de la ville
+        - {{CODE_POSTAL}} : Code postal (5 chiffres)
+        - {{SURFACE}} : Surface en m²
+        - {{NB_PIECES}} : Nombre de pièces
+        - {{PRIX}} : Prix d'acquisition en €
+        - {{PRIX_M2}} : Prix au m² en €
+        - {{URL_ANNONCE}} : Lien vers l'annonce
+        - {{IMAGE_ANNONCE}} : URL de l'image du bien
+        - {{MODE_CHAUFFAGE}} : Mode de chauffage (gaz, électrique, etc.)
+        - {{ANNEE_CONSTRUCTION}} : Année de construction du bien
 
-    Variables financières :
-    - {{BUDGET_TRAVAUX}} : Budget travaux en €
-    - {{COUT_TOTAL}} : Coût total projet (acquisition + travaux) en €
-    - {{MONTANT_TOTAL_SUBVENTIONS}} : Total subventions en €
-    - {{POURCENTAGE_SUBVENTIONS}} : % du prix d'acquisition
-    - {{NOMBRE_AIDES}} : Nombre d'aides éligibles
-    - {{COUT_NET}} : Coût après déduction des aides en €
-    - {{TAXE_FONCIERE}} : Taxe foncière annuelle en €
-    - {{EXONERATION_TF}} : oui / non / partielle
-    - {{PARCOURS_AIDE}} : accompagné / par geste / copropriété
+        ==========================================
+        VARIABLES DPE (Diagnostic Performance Énergétique)
+        ==========================================
+        - {{DPE_ACTUEL}} : Classe DPE actuelle (A-G)
+        - {{DPE_ACTUEL_CONSO}} : Consommation actuelle en kWh/m²/an
+        - {{DPE_VISE}} : Classe DPE visée après travaux (A-G)
+        - {{DPE_VISE_CONSO}} : Consommation visée en kWh/m²/an
+        - {{GAIN_CLASSES}} : Nombre de classes DPE gagnées
 
-    Variables d'économies :
-    - {{ECONOMIE_ANNUELLE}} : Économie annuelle en € / an
-    - {{ROI_ANNEES}} : Retour sur investissement en années
-    - {{REDUCTION_CO2}} : Réduction CO2 en kg / an
+        ==========================================
+        VARIABLES DU PROFIL UTILISATEUR
+        ==========================================
+        - {{NOM}} : Nom de l'utilisateur
+        - {{PRENOM}} : Prénom de l'utilisateur
+        - {{EMAIL}} : Adresse email de l'utilisateur
+        - {{TELEPHONE}} : Numéro de téléphone
+        - {{STATUT}} : Propriétaire occupant / Propriétaire bailleur
+        - {{NB_PERSONNES}} : Nombre de personnes du ménage
+        - {{REVENUS}} : Revenus annuels du ménage en €
+        - {{RESIDENCE_PRINCIPALE}} : Oui / Non
+        - {{PERIODE_CONSTRUCTION}} : Au moins 15 ans / Moins de 15 ans
 
-    Variables des aides (dans boucle {{#AIDES}}) :
-    - {{NOM_AIDE}} : Nom de l'aide
-    - {{TYPE_AIDE}} : Subvention / Prêt / Remboursement
-    - {{MONTANT_AIDE}} : Montant estimé en €
-    - {{DESCRIPTION_AIDE}} : Description de l'aide
-    - {{DETAILS_AIDE}} : Détails complémentaires (taux, durée, etc.)
+        ==========================================
+        VARIABLES FINANCIÈRES - COÛTS
+        ==========================================
+        - {{PRIX}} : Prix d'acquisition du bien en €
+        - {{BUDGET_TRAVAUX}} : Budget travaux de rénovation en €
+        - {{COUT_TOTAL}} : Coût total projet (acquisition + travaux) en €
+        
+        ==========================================
+        VARIABLES FINANCIÈRES - AIDES
+        ==========================================
+        - {{MONTANT_TOTAL_SUBVENTIONS}} : Total des subventions estimées en €
+        - {{RESTE_A_CHARGE_TRAVAUX}} : Reste à charge sur les travaux en €
+        - {{COUVERTURE_TRAVAUX}} : Pourcentage de couverture des travaux par les aides
+        - {{NOMBRE_AIDES}} : Nombre d'aides éligibles
+        - {{COUT_NET}} : Coût total après déduction des aides en €
+        
+        ==========================================
+        VARIABLES FISCALITÉ
+        ==========================================
+        - {{TAXE_FONCIERE}} : Taxe foncière annuelle en €
+        - {{EXONERATION_TF}} : Montant exonération taxe foncière en €
+        - {{PARCOURS_AIDE}} : Parcours accompagné / Par geste / Copropriété
+        - {{ACCOMPAGNEMENT_REQUIS}} : Oui / Non / Recommandé
 
-    Variables des travaux (dans boucle {{#TRAVAUX}}) :
-    - {{TRAVAIL}} : Type de travaux
+        ==========================================
+        VARIABLES D'ÉCONOMIES D'ÉNERGIE
+        ==========================================
+        - {{ECONOMIE_ANNUELLE}} : Économie annuelle sur factures d'énergie en €/an
+        - {{REDUCTION_CO2}} : Réduction des émissions de CO2 en kg/an
 
-    Variables système :
-    - {{DATE_GENERATION}} : Date de génération du rapport
-    - {{ACCOMPAGNEMENT_REQUIS}} : oui / non / recommandé
-    -->
-</body>
+        ==========================================
+        VARIABLES DES AIDES (pour boucle dynamique)
+        ==========================================
+        {{#AIDES}}
+        - {{NOM_AIDE}} : Nom de l'aide (MaPrimeRénov', Éco-PTZ, CEE, etc.)
+        - {{TYPE_AIDE}} : Type d'aide (Subvention / Prêt)
+        - {{MONTANT_AIDE}} : Montant estimé de l'aide en €
+        - {{DESCRIPTION_AIDE}} : Description courte de l'aide
+        - {{URL_AIDE}} : Lien vers plus d'informations
+        {{/AIDES}}
+
+        ==========================================
+        VARIABLES DES TRAVAUX (pour boucle dynamique)
+        ==========================================
+        {{#TRAVAUX}}
+        - {{NOM_TRAVAIL}} : Type de travaux (Isolation, Chauffage, etc.)
+        - {{URL_TRAVAIL}} : Lien vers plus d'informations
+        {{/TRAVAUX}}
+
+        ==========================================
+        VARIABLES SYSTÈME
+        ==========================================
+        - {{DATE_GENERATION}} : Date de génération du rapport (format JJ/MM/AAAA)
+        - {{VERSION_EXTENSION}} : Version de l'extension REVESTA
+        -->
+    </body>
 </html>
