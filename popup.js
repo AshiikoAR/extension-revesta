@@ -589,49 +589,119 @@ dom.emailForm?.addEventListener('submit', async (e) => {
         return;
     }
     
+    // Désactiver le bouton pendant l'envoi
+    const submitBtn = dom.emailForm.querySelector('button[type="submit"]');
+    const originalBtnHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Envoi en cours...&ensp;<i class="bx bx-loader-alt bx-spin"></i>';
+    
     try {
-        // Préparer le contenu du compte-rendu
-        const aidesText = Array.from(dom.aidesList.querySelectorAll('.aide-item'))
-            .map(item => {
-                const name = item.querySelector('h5')?.textContent || '';
-                const amount = item.querySelector('.aide-amount')?.textContent || '';
-                return `• ${name}: ${amount}`;
-            }).join('\n');
+        // Charger la config utilisateur complète
+        const userConfig = await new Promise(resolve => {
+            chrome.storage.sync.get(['userConfig'], (result) => {
+                resolve(result.userConfig || {});
+            });
+        });
         
-        const emailContent = {
-            to: email,
-            nom: nom,
-            prenom: prenom,
-            telephone: telephone || null,
-            property: {
+        // Construire la liste des aides depuis le DOM
+        const aidesFromDom = Array.from(dom.aidesList.querySelectorAll('.aide-item')).map(item => {
+            const name = item.querySelector('h5')?.textContent || '';
+            const detail = item.querySelector('p')?.textContent || '';
+            return { nom: name, detail: detail };
+        });
+        
+        // Préparer le payload complet avec TOUTES les données
+        const payload = {
+            // --- Données de l'annonce (propriété) ---
+            annonce: {
+                site: currentPropertyData.site,
                 titre: currentPropertyData.titre,
                 prix: currentPropertyData.prix,
-                localisation: currentPropertyData.localisation || currentPropertyData.codePostal,
-                surface: currentPropertyData.surface
+                localisation: currentPropertyData.localisation,
+                ville: currentPropertyData.ville,
+                code_postal: currentPropertyData.codePostal,
+                surface: currentPropertyData.surface,
+                pieces: currentPropertyData.pieces,
+                description: currentPropertyData.description,
+                type_logement: currentPropertyData.typeLogement,
+                dpe: currentPropertyData.dpe,
+                etage: currentPropertyData.etage,
+                type_travaux: currentPropertyData.typeWork,
+                images: currentPropertyData.images || [],
+                url: currentPropertyData.url,
+                date_extraction: currentPropertyData.dateExtraction
             },
-            aides: {
-                montantTotal: dom.aidAmount.textContent,
-                pourcentage: dom.aidPercent.textContent,
-                liste: aidesText
+            
+            // --- Données utilisateur (profil complet) ---
+            utilisateur: {
+                nom: nom,
+                prenom: prenom,
+                email: email,
+                telephone: telephone || null,
+                statut: userConfig.statut || 'propriétaire',
+                code_postal: userConfig.codePostal || null,
+                revenus: userConfig.revenus || null,
+                nombre_personnes: userConfig.nombrePersonnes || null,
+                residence_principale: userConfig.residencePrincipale || 'oui',
+                dpe_actuel: userConfig.dpeActuel || 6,
+                dpe_vise: userConfig.dpeVise || 2,
+                budget_achat: userConfig.budgetAchat || null,
+                surface_logement: userConfig.surfaceLogement || null,
+                periode_construction: userConfig.periodeConstruction || 'au moins 15 ans',
+                budget_travaux: userConfig.budgetTravaux || null,
+                taxe_fonciere: userConfig.taxeFonciere || null,
+                gain_energetique: userConfig.gainEnergetique || null,
+                type_logement: userConfig.typeLogement || null,
+                parcours_aide: userConfig.parcoursAide || null,
+                condition_depenses: userConfig.conditionDepenses !== false,
+                travaux: userConfig.travaux || [],
+                notifications_aides: userConfig.notificationsAides !== false,
+                notifications_prix: userConfig.notificationsPrix !== false,
+                accept_analytics: userConfig.acceptAnalytics !== false
+            },
+            
+            // --- Résultats de la simulation (aides calculées) ---
+            simulation: {
+                montant_total: dom.aidAmount?.textContent || '0',
+                pourcentage_bien: dom.aidPercent?.textContent || '0',
+                aides: aidesFromDom
             }
         };
         
-        // Simuler l'envoi (à remplacer par un vrai service d'email)
-        console.log('📧 Envoi du compte-rendu:', emailContent);
+        console.log('📤 Envoi simulation au backend:', payload);
         
-        // Simulation d'un délai d'envoi
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Envoyer via le background worker (gère le fetch cross-origin)
+        const response = await new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage(
+                { type: 'SEND_SIMULATION', payload: payload },
+                (response) => {
+                    if (chrome.runtime.lastError) {
+                        reject(new Error(chrome.runtime.lastError.message));
+                    } else {
+                        resolve(response);
+                    }
+                }
+            );
+        });
         
-        showEmailMessage(`✅ Compte-rendu envoyé à ${email}`, 'success');
-        
-        // Réinitialiser le formulaire après 3 secondes
-        setTimeout(() => {
-            dom.emailMessage.classList.add('hidden');
-        }, 3000);
+        if (response.success) {
+            showEmailMessage(`✅ Compte-rendu envoyé à ${email}`, 'success');
+            
+            // Réinitialiser le message après 4 secondes
+            setTimeout(() => {
+                dom.emailMessage.classList.add('hidden');
+            }, 4000);
+        } else {
+            throw new Error(response.error || 'Erreur inconnue du serveur');
+        }
         
     } catch (error) {
-        console.error('Erreur envoi email:', error);
-        showEmailMessage('❌Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+        console.error('Erreur envoi simulation:', error);
+        showEmailMessage('❌ Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+    } finally {
+        // Réactiver le bouton
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHTML;
     }
 });
 

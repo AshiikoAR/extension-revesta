@@ -269,6 +269,83 @@ function extractLeBonCoinData() {
       return null;
     };
 
+    const getImages = () => {
+      const images = [];
+      const seen = new Set();
+
+      // Méthode 1 : Carrousel / galerie d'images LeBonCoin
+      const galleryImgs = document.querySelectorAll(
+        '[data-qa-id="adview_gallery_container"] img, ' +
+        '[data-qa-id="adview_spotlight_container"] img, ' +
+        '[data-test-id="ad-photo"] img, ' +
+        '[class*="gallery"] img, ' +
+        '[class*="carousel"] img, ' +
+        '[class*="slider"] img, ' +
+        '[class*="Slider"] img'
+      );
+      galleryImgs.forEach(img => {
+        const src = img.src || img.dataset?.src || img.getAttribute('data-src') || '';
+        if (src && !seen.has(src) && !src.includes('icon') && !src.includes('logo') && !src.includes('avatar')) {
+          seen.add(src);
+          images.push(src);
+        }
+      });
+
+      // Méthode 2 : srcset (images haute résolution)
+      if (images.length === 0) {
+        document.querySelectorAll('[class*="gallery"] img, [class*="carousel"] img, picture source').forEach(el => {
+          const srcset = el.getAttribute('srcset') || '';
+          const urls = srcset.split(',').map(s => s.trim().split(' ')[0]).filter(Boolean);
+          urls.forEach(url => {
+            if (url && !seen.has(url) && !url.includes('icon') && !url.includes('logo')) {
+              seen.add(url);
+              images.push(url);
+            }
+          });
+        });
+      }
+
+      // Méthode 3 : Données structurées JSON-LD (images fiables)
+      document.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
+        try {
+          const ld = JSON.parse(script.textContent);
+          const extractFromLd = (obj) => {
+            if (!obj) return;
+            const imgField = obj.image || obj.photo;
+            if (typeof imgField === 'string' && !seen.has(imgField)) {
+              seen.add(imgField);
+              images.push(imgField);
+            } else if (Array.isArray(imgField)) {
+              imgField.forEach(u => {
+                const url = typeof u === 'string' ? u : u?.url || u?.contentUrl;
+                if (url && !seen.has(url)) {
+                  seen.add(url);
+                  images.push(url);
+                }
+              });
+            }
+          };
+          if (Array.isArray(ld)) ld.forEach(extractFromLd);
+          else extractFromLd(ld);
+        } catch (_) {}
+      });
+
+      // Méthode 4 : toutes les grosses images de la page (fallback)
+      if (images.length === 0) {
+        document.querySelectorAll('img').forEach(img => {
+          const src = img.src || '';
+          const w = img.naturalWidth || img.width || 0;
+          if (src && w >= 200 && !seen.has(src) && !src.includes('icon') && !src.includes('logo') && !src.includes('avatar') && !src.includes('sprite')) {
+            seen.add(src);
+            images.push(src);
+          }
+        });
+      }
+
+      console.log(`📸 ${images.length} image(s) extraite(s)`);
+      return images;
+    };
+
     const data = {
       site: 'leboncoin',
       titre: getTitre(),
@@ -282,6 +359,7 @@ function extractLeBonCoinData() {
       typeLogement: extractPropertyType(),
       dpe: getDPE(),
       etage: extractNumber(document.body.textContent, /(\d+)(?:er|ère|e)?\s*étage/i),
+      images: getImages(),
       url: window.location.href,
       dateExtraction: new Date().toISOString()
     };

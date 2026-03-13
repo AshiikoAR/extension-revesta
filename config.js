@@ -16,7 +16,8 @@ const CONFIG = {
 
   // URLs des APIs
   APIS: {
-    MES_AIDES_RENO: 'https://mesaidesreno.beta.gouv.fr/api/v1'
+    MES_AIDES_RENO: 'https://mesaidesreno.beta.gouv.fr/api/v1',
+    REVESTA_BACKEND: 'http://31.207.38.67/api/v1'  // URL du backend Laravel
   },
 
   // Tokens d'authentification

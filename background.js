@@ -305,10 +305,57 @@ function calculateEstimatedAid(aides) {
   };
 }
 
+// URL de l'API backend REVESTA
+const REVESTA_API_URL = 'http://31.207.38.67/api/v1';
+
+/**
+ * Envoyer la simulation au backend REVESTA
+ */
+async function sendSimulation(payload) {
+  try {
+    console.log('📤 Envoi simulation au backend REVESTA...');
+    console.log('📦 Payload:', JSON.stringify(payload).substring(0, 500) + '...');
+
+    const response = await fetch(`${REVESTA_API_URL}/send-simulation`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Backend REVESTA erreur:', response.status, errorText);
+      throw new Error(`Erreur serveur (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Simulation envoyée avec succès:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Erreur envoi simulation:', error);
+    throw error;
+  }
+}
+
 /**
  * Écouter les messages du popup
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'SEND_SIMULATION') {
+    sendSimulation(request.payload)
+      .then(result => {
+        sendResponse({ success: true, data: result });
+      })
+      .catch(error => {
+        console.error('Erreur envoi simulation:', error);
+        sendResponse({ success: false, error: error.message });
+      });
+    return true; // Réponse asynchrone
+  }
+
   if (request.type === 'ANALYZE_PROPERTY') {
     analyzeAids(request.propertyData)
       .then(results => {
