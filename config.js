@@ -1,5 +1,11 @@
 /**
- * Configuration & Constantes de l'extension
+ * Configuration & Constantes de l'extension REVESTA
+ *
+ * Ce module centralise toutes les valeurs partag\u00e9es entre background.js, popup.js
+ * et les content-scripts : URLs d'API, tokens, types de travaux, plafonds de revenus, etc.
+ *
+ * Import\u00e9 en ES module (`import CONFIG from './config.js'`).
+ * Modifier ici plut\u00f4t que de dupliquer les constantes dans chaque fichier.
  */
 
 const CONFIG = {
@@ -17,7 +23,7 @@ const CONFIG = {
   // URLs des APIs
   APIS: {
     MES_AIDES_RENO: 'https://mesaidesreno.beta.gouv.fr/api/v1',
-    REVESTA_BACKEND: 'http://31.207.38.67/api/v1'  // URL du backend Laravel
+    REVESTA_BACKEND: 'https://31.207.38.67/api/v1'  // URL du backend Laravel
   },
 
   // Tokens d'authentification

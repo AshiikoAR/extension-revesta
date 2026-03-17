@@ -1,16 +1,38 @@
 /**
  * Content Script - LeBonCoin
- * Extrait les données de l'annonce immobilière
+ *
+ * Ce script s'exécute dans le contexte de la page LeBonCoin.
+ * Il a deux responsabilités principales :
+ *
+ *  1. EXTRACTION  — Scraper les données de l'annonce (prix, surface, DPE, localisation,
+ *                   images, type de bien...) et les exposer dans `window.propertyData`
+ *                   ET dans `sessionStorage` pour la stratégie de récupération rapide du popup.
+ *
+ *  2. UI          — Injecter un bouton fixe "💰 Mes aides pour ce bien" pour ouvrir le popup,
+ *                   uniquement si l'URL correpond à une annonce de vente immobilière.
+ *
+ * Gestion SPA :
+ *   LeBonCoin est une Single Page Application. Deux MutationObservers sont actifs :
+ *   - L'un ré-extrait les données après des mutations DOM (contenu chargé en lazy).
+ *   - L'autre détecte les changements d'URL (navigation sans rechargement) et ajuste le bouton.
  */
 
 console.log('🔧 Initialisation Content Script LeBonCoin');
 
-// Extraction des données de l'annonce
+/**
+ * Point d'entrée principal : extrait toutes les données de l'annonce LeBonCoin courante.
+ *
+ * Les sous-fonctions sont définies en interne pour garder le scope privé.
+ * Chaque sous-fonction applique plusieurs stratégies de sélecteurs par ordre de fiabilité.
+ *
+ * @returns {object|null} Données structurées de l'annonce, ou null en cas d'erreur
+ */
 function extractLeBonCoinData() {
   try {
     console.log('🔍 Tentative extraction données LeBonCoin...');
     
-    // Essayer différents sélecteurs possibles
+    // • Chaque helper ci-dessous tente plusieurs sélecteurs dans l'ordre de fiabilité
+    //   du plus spécifique (attributs data-qa-id) au plus générique (body textContent).
     const getTitre = () => {
       // Priorité 1: Élément spécifique au titre (le plus fiable)
       const titleElement = document.querySelector('[data-qa-id="adview_title"]');
@@ -37,7 +59,7 @@ function extractLeBonCoinData() {
       return document.querySelector('[data-testid="ad-title"]')?.textContent?.trim() || '';
     };
 
-    const getPrix = () => {
+    /** Retourne le prix en euros (sans espaces ni symboles) */
       const priceText =
         document.querySelector('[data-qa-id="adview_price"]')?.textContent ||
         document.querySelector('[data-testid="ad-price"]')?.textContent ||
@@ -46,8 +68,7 @@ function extractLeBonCoinData() {
       return parseInt(priceText.replace(/[^\d]/g, '') || '0');
     };
 
-    const getLocalisation = () => {
-      // PRIORITÉ #1 : Lien d'adresse avec format "Ville CodePostal"
+    /** Retourne la chaîne "Ville CodePostal" la plus complète trouvée sur la page */
       const topCriteriaLinks = Array.from(document.querySelectorAll('a[href*="#map"]'));
       for (const link of topCriteriaLinks) {
         const linkText = link.textContent.trim();
@@ -93,8 +114,7 @@ function extractLeBonCoinData() {
       return location;
     };
 
-    const getVille = () => {
-      // Extraire le nom de la ville depuis le lien d'adresse
+    /** Extrait uniquement le nom de la ville (sans le code postal) */
       const topCriteriaLinks = Array.from(document.querySelectorAll('a[href*="#map"]'));
       for (const link of topCriteriaLinks) {
         const linkText = link.textContent.trim();
@@ -119,8 +139,10 @@ function extractLeBonCoinData() {
       return '';
     };
 
-    const getCodePostal = () => {
-      // Stratégie : prioriser le lien d'adresse dans les attributs du top de l'annonce
+    /**
+     * Extrait le code postal (5 chiffres) en appliquant 6 stratégies successives :
+     * lien #map, data-test-id de critères, header localisation, JSON-LD, critère "Ville", fallback.
+     */
       
       // 1. PRIORITÉ #1 : Lien d'adresse dans data-test-id="adview-top-criteria-atttributes" (le plus fiable)
       // Cherche un lien <a> contenant "Ville CodePostal" avec href="#map"
@@ -216,8 +238,10 @@ function extractLeBonCoinData() {
       return '';
     };
 
-    const getDPE = () => {
-      // Méthode 1: Chercher dans data-test-id="energy-criteria" (nouveau format LeBonCoin)
+    /**
+     * Retourne la valeur DPE (1=A à 7=G) ou null si non renseignée.
+     * 3 stratégies : élément energy-criteria, attributs data-qa-id des critères, attributs class/alt.
+     */
       const energyCriteria = document.querySelector('[data-test-id="energy-criteria"]');
       if (energyCriteria) {
         // Le DPE actif a des classes spécifiques (border, h-sz-24, etc.)
@@ -269,8 +293,10 @@ function extractLeBonCoinData() {
       return null;
     };
 
-    const getImages = () => {
-      const images = [];
+    /**
+     * Collecte les URLs d'images de l'annonce (dédupliquées).
+     * 4 stratégies successives : galerie/carrousel, srcset, JSON-LD, fallback toutes images.
+     */
       const seen = new Set();
 
       // Méthode 1 : Carrousel / galerie d'images LeBonCoin
@@ -346,7 +372,7 @@ function extractLeBonCoinData() {
       return images;
     };
 
-    const data = {
+    // ── Assembler l'objet de données final ────────────────────────────────────────
       site: 'leboncoin',
       titre: getTitre(),
       prix: getPrix(),
@@ -391,7 +417,12 @@ function extractLeBonCoinData() {
 }
 
 /**
- * Extraire un nombre avec regex
+ * Extrait un nombre entier depuis un texte à l'aide d'une expression régulière.
+ * La regex doit contenir un groupe capturant le nombre.
+ *
+ * @param {string} text  - Texte source
+ * @param {RegExp} regex - Pattern avec groupe capturant, ex : /(\ d+)\s*m²/i
+ * @returns {number|null}
  */
 function extractNumber(text, regex) {
   const match = text.match(regex);
@@ -399,7 +430,10 @@ function extractNumber(text, regex) {
 }
 
 /**
- * Détecter le type de logement
+ * Détecte le type de logement en cherchant des mots-clés dans le titre puis dans les critères.
+ * Retourne 'appartement', 'maison', 'terrain' ou 'autre'.
+ *
+ * @returns {'appartement'|'maison'|'terrain'|'autre'}
  */
 function extractPropertyType() {
   // Priorité 1: Chercher dans le titre de l'annonce
@@ -451,7 +485,11 @@ function extractPropertyType() {
 }
 
 /**
- * Détecter le type de travaux à partir de la description
+ * Devine le type de travaux à envisager en recherchant des mots-clés dans la description.
+ * Retourne 'renovation' par défaut si aucun mot-clé spécifique n'est trouvé.
+ *
+ * @param {string} description
+ * @returns {'renovation'|'isolation_chauffage'|'toiture'|'menuiserie'}
  */
 function detectWorkType(description) {
   const descLower = description.toLowerCase();
@@ -473,7 +511,10 @@ function detectWorkType(description) {
 }
 
 /**
- * Vérifier si l'URL correspond à une annonce de vente immobilière
+ * Retourne true si l'URL courante correspond à une annonce de vente immobilière LeBonCoin.
+ * Format attendu : https://www.leboncoin.fr/ad/ventes_immobilieres/{id}
+ *
+ * @returns {boolean}
  */
 function isValidPropertyUrl() {
   const url = window.location.href;
@@ -483,7 +524,8 @@ function isValidPropertyUrl() {
 }
 
 /**
- * Supprimer le bouton de l'extension s'il existe
+ * Retire le bouton "💰 Mes aides" injecté par l'extension, s'il est présent.
+ * Appelé lorsque la navigation SPA conduit vers une page qui n'est pas une annonce.
  */
 function removeExtensionButton() {
   const existingButton = document.getElementById('reno-aides-btn');
@@ -494,7 +536,10 @@ function removeExtensionButton() {
 }
 
 /**
- * Ajouter un bouton pour analyser les aides
+ * Injecte un bouton fixe en bas à droite de la page pour ouvrir le popup de l'extension.
+ * Le bouton est créé uniquement si l'URL est celle d'une annonce de vente immobilière.
+ * Il envoie un message 'OPEN_POPUP' au service worker via chrome.runtime.sendMessage.
+ * En cas de contexte d'extension invalide (rechargement de l'extension), il recharge la page.
  */
 function addExtensionButton() {
   // Vérifier si l'URL est valide
@@ -569,7 +614,11 @@ function addExtensionButton() {
   document.body.appendChild(button);
 }
 
-// Écouter les messages du popup
+// ─────────────────────────────────────────────────────────────
+// Listeners & initialisation
+// ─────────────────────────────────────────────────────────────
+
+// Répondre aux demandes du popup (qui ne peut pas lire window.propertyData directement)
 try {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('Message reçu:', request.type);
@@ -583,41 +632,31 @@ try {
   console.warn('⚠️ Impossible d\'ajouter le listener (contexte invalidé):', error.message);
 }
 
-// Extraire les données au chargement
+// Lancer l'extraction dès que le DOM est prêt.
+// On attend 500 ms pour laisser LeBonCoin charger son titre via JavaScript.
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    // Attendre un peu que le titre soit chargé
-    setTimeout(extractLeBonCoinData, 500);
-  });
+  document.addEventListener('DOMContentLoaded', () => setTimeout(extractLeBonCoinData, 500));
 } else {
-  // Attendre un peu que le titre soit chargé
   setTimeout(extractLeBonCoinData, 500);
 }
 
-// Re-extraire si les données changent (avec debounce pour éviter trop d'appels)
+// Observer les mutations DOM pour re-extraire si le contenu est injecté en lazy
+// (debounce 1s pour éviter des appels trop fréquents lors de gros changements DOM)
 let extractTimeout = null;
 const observer = new MutationObserver(() => {
   if (extractTimeout) clearTimeout(extractTimeout);
-  extractTimeout = setTimeout(() => {
-    extractLeBonCoinData();
-  }, 1000); // Attendre 1s après le dernier changement
+  extractTimeout = setTimeout(extractLeBonCoinData, 1000);
 });
+observer.observe(document.body, { childList: true, subtree: true, attributes: false });
 
-observer.observe(document.body, {
-  childList: true,
-  subtree: true,
-  attributes: false
-});
-
-// Détecter les changements d'URL pour les sites en SPA (Single Page Application)
+// Détecter les changements d'URL sans rechargement (navigation SPA LeBonCoin)
 let lastUrl = location.href;
 new MutationObserver(() => {
   const currentUrl = location.href;
   if (currentUrl !== lastUrl) {
     lastUrl = currentUrl;
     console.log('🔄 Changement d\'URL détecté:', currentUrl);
-    
-    // Vérifier si on doit afficher/masquer le bouton
+    // Sur une annonce : re-scraper. Ailleurs : retirer le bouton injecté.
     if (isValidPropertyUrl()) {
       setTimeout(extractLeBonCoinData, 500);
     } else {

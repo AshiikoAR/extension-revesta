@@ -13,7 +13,8 @@
     "https://*.leboncoin.fr/*",
     "https://mesaidesreno.beta.gouv.fr/*",
     "https://geo.api.gouv.fr/*",
-    "http://31.207.38.67/*"
+    "http://31.207.38.67/*",
+    "https://31.207.38.67/*"
   ],
   "background": {
     "service_worker": "background.js"
