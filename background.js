@@ -179,7 +179,7 @@ async function fetchMesAidesReno(propertyData) {
 
       // Erreur spécifique pour les codes postaux non supportés par l'API
       if (errorText.includes('Unexpected end of JSON input')) {
-        throw new Error(`Code INSEE ${codeInsee} (${codePostal}) non reconnu par l'API. Certaines communes ne sont pas encore supportées par Mes Aides Réno.`);
+        throw new Error(`Code postal ${codePostal} non reconnu par l'API. Certaines communes ne sont pas encore supportées par Mes Aides Réno.`);
       }
       throw new Error(`API error ${response.status}: ${errorText}`);
     }
@@ -319,7 +319,7 @@ function calculateEstimatedAid(aides) {
 // ─────────────────────────────────────────────────────────────
 
 // URL du backend Laravel REVESTA
-const REVESTA_API_URL = 'http://31.207.38.67/api/v1';
+const REVESTA_API_URL = 'https://admin.revesta.fr/api/v1';
 
 /**
  * Parse le corps d'une réponse HTTP en JSON, ou retourne { raw } si ce n'est pas du JSON valide.
@@ -355,38 +355,159 @@ function buildValidationErrorMessage(data) {
 }
 
 /**
- * Fallback XHR pour envoyer un POST JSON quand fetch() échoue (TypeError réseau).
- * XHR n'est pas soumis aux mêmes restrictions CORS que fetch() dans les service workers.
+ * Construit un payload minimal et robuste pour fallback en cas d'erreur 500 backend.
+ * Objectif : éviter qu'un champ optionnel mal formaté fasse tomber toute la création.
  *
- * @param {string} url
  * @param {object} payload
- * @returns {Promise<{ response: { ok: boolean, status: number }, data: object }>}
+ * @returns {object}
  */
-function postJsonViaXHR(url, payload) {
-  return new Promise((resolve, reject) => {
-    const xhr      = new XMLHttpRequest();
-    xhr.open('POST', url, true);
-    xhr.timeout    = 25000;
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.setRequestHeader('Accept',       'application/json');
+function buildMinimalSimulationPayload(payload) {
+  const annonceUrl = payload?.annonce?.url || '';
+  const email      = payload?.utilisateur?.email || '';
 
-    xhr.onload = () => {
-      const data = parseResponseBody(xhr.responseText || '');
-      resolve({
-        response: {
-          ok:     xhr.status >= 200 && xhr.status < 300,
-          status: xhr.status
-        },
-        data
-      });
-    };
+  const toNumber = (value, defaultValue = 0) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : defaultValue;
+  };
 
-    xhr.onerror  = () => reject(new Error('XHR network error'));
-    xhr.ontimeout = () => reject(new Error('XHR timeout'));
-    xhr.onabort  = () => reject(new Error('XHR aborted'));
+  return {
+    annonce: {
+      url: annonceUrl
+    },
+    utilisateur: {
+      email,
+      nom: payload?.utilisateur?.nom || null,
+      prenom: payload?.utilisateur?.prenom || null
+    },
+    simulation: {
+      montant_total_aides: toNumber(payload?.simulation?.montant_total_aides, 0),
+      pourcentage_bien: toNumber(payload?.simulation?.pourcentage_bien, 0),
+      aides_details: Array.isArray(payload?.simulation?.aides_details) ? payload.simulation.aides_details : []
+    }
+  };
+}
 
-    xhr.send(JSON.stringify(payload));
-  });
+/**
+ * Tronque de façon sûre une chaîne (trim + maxLength).
+ * @param {any} value
+ * @param {number} maxLength
+ * @returns {string|null}
+ */
+function truncateString(value, maxLength) {
+  if (value == null) return null;
+  const normalized = String(value).trim();
+  if (!normalized) return null;
+  return normalized.length > maxLength ? normalized.slice(0, maxLength) : normalized;
+}
+
+/**
+ * Convertit en nombre si possible, sinon fallback.
+ * @param {any} value
+ * @param {number} fallback
+ * @returns {number}
+ */
+function toNumberSafe(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+/**
+ * Sanitize le payload avant envoi backend pour limiter les erreurs 500
+ * dues à des types inattendus, chaînes trop longues ou URLs invalides.
+ *
+ * @param {object} payload
+ * @returns {object}
+ */
+function sanitizeSimulationPayload(payload) {
+  const annonce = payload?.annonce || {};
+  const utilisateur = payload?.utilisateur || {};
+  const simulation = payload?.simulation || {};
+
+  const safeImages = Array.isArray(annonce.images)
+    ? Array.from(new Set(
+        annonce.images
+          .map((imageUrl) => truncateString(imageUrl, 2048))
+          .filter((imageUrl) => imageUrl && /^https?:\/\//i.test(imageUrl))
+      )).slice(0, 20)
+    : [];
+
+  const safeAidesDetails = Array.isArray(simulation.aides_details)
+    ? simulation.aides_details
+        .slice(0, 100)
+        .map((aide) => ({
+          nom: truncateString(aide?.nom, 255) || 'Aide',
+          detail: truncateString(aide?.detail, 2000),
+          type: (aide?.type === 'prêt' || aide?.type === 'subvention') ? aide.type : 'subvention',
+          valeur: toNumberSafe(aide?.valeur, 0)
+        }))
+    : [];
+
+  const safeTravaux = Array.isArray(simulation.travaux)
+    ? simulation.travaux
+        .map((workType) => truncateString(workType, 120))
+        .filter(Boolean)
+        .slice(0, 30)
+    : [];
+
+  return {
+    ...payload,
+    annonce: {
+      ...annonce,
+      site: truncateString(annonce.site, 100),
+      titre: truncateString(annonce.titre, 500),
+      prix: toNumberSafe(annonce.prix, 0),
+      localisation: truncateString(annonce.localisation, 255),
+      ville: truncateString(annonce.ville, 255),
+      code_postal: truncateString(annonce.code_postal, 10),
+      surface: toNumberSafe(annonce.surface, 0),
+      pieces: toNumberSafe(annonce.pieces, 0),
+      description: truncateString(annonce.description, 10000),
+      type_logement: truncateString(annonce.type_logement, 50),
+      dpe: truncateString(annonce.dpe, 2),
+      etage: truncateString(annonce.etage, 20),
+      type_travaux: truncateString(annonce.type_travaux, 120),
+      images: safeImages,
+      url: truncateString(annonce.url, 2048),
+      date_extraction: truncateString(annonce.date_extraction, 40)
+    },
+    utilisateur: {
+      ...utilisateur,
+      nom: truncateString(utilisateur.nom, 120),
+      prenom: truncateString(utilisateur.prenom, 120),
+      email: truncateString(utilisateur.email, 320),
+      telephone: truncateString(utilisateur.telephone, 40),
+      statut: truncateString(utilisateur.statut, 50),
+      code_postal: truncateString(utilisateur.code_postal, 10),
+      revenus: toNumberSafe(utilisateur.revenus, 0),
+      nombre_personnes: toNumberSafe(utilisateur.nombre_personnes, 0),
+      residence_principale: Boolean(utilisateur.residence_principale),
+      dpe_actuel: truncateString(utilisateur.dpe_actuel, 2),
+      dpe_vise: truncateString(utilisateur.dpe_vise, 2),
+      budget_achat: toNumberSafe(utilisateur.budget_achat, 0),
+      surface_logement: toNumberSafe(utilisateur.surface_logement, 0),
+      periode_construction: truncateString(utilisateur.periode_construction, 80),
+      budget_travaux: toNumberSafe(utilisateur.budget_travaux, 0),
+      taxe_fonciere: toNumberSafe(utilisateur.taxe_fonciere, 0),
+      gain_energetique: utilisateur.gain_energetique == null ? null : toNumberSafe(utilisateur.gain_energetique, 0),
+      type_logement: utilisateur.type_logement == null ? null : truncateString(utilisateur.type_logement, 50),
+      parcours_aide: utilisateur.parcours_aide == null ? null : truncateString(utilisateur.parcours_aide, 50),
+      condition_depenses: Boolean(utilisateur.condition_depenses),
+      notifications_aides: Boolean(utilisateur.notifications_aides),
+      notifications_prix: Boolean(utilisateur.notifications_prix),
+      accept_analytics: Boolean(utilisateur.accept_analytics)
+    },
+    simulation: {
+      ...simulation,
+      gain_energetique: simulation.gain_energetique == null ? null : toNumberSafe(simulation.gain_energetique, 0),
+      parcours_aide: simulation.parcours_aide == null ? null : truncateString(simulation.parcours_aide, 50),
+      condition_depenses: Boolean(simulation.condition_depenses),
+      montant_total_aides: toNumberSafe(simulation.montant_total_aides, 0),
+      pourcentage_bien: toNumberSafe(simulation.pourcentage_bien, 0),
+      aides_details: safeAidesDetails,
+      travaux: safeTravaux,
+      date: truncateString(simulation.date, 40)
+    }
+  };
 }
 
 /**
@@ -394,8 +515,7 @@ function postJsonViaXHR(url, payload) {
  *
  * Stratégie de robustesse :
  *  1. Tentative fetch() avec AbortController (timeout 25 s)
- *  2. Si fetch() échoue (TypeError réseau), fallback vers XHR
- *  3. Si la réponse est 405 GET (redirect HTTP→HTTPS qui transforme POST en GET),
+ *  2. Si la réponse est 405 GET (redirect HTTP→HTTPS qui transforme POST en GET),
  *     on réessaie avec les variantes HTTPS et la barre oblique finale
  *
  * @param {object} payload - Payload complet (annonce + utilisateur + simulation)
@@ -404,37 +524,55 @@ function postJsonViaXHR(url, payload) {
  */
 async function sendSimulation(payload) {
   try {
+    const safePayload = sanitizeSimulationPayload(payload || {});
+
     console.log('📤 Envoi simulation au backend REVESTA...');
-    console.log('📦 Payload:', JSON.stringify(payload).substring(0, 500) + '...');
+    console.log('📦 Payload:', JSON.stringify(safePayload).substring(0, 500) + '...');
 
     /**
-     * Tente un POST fetch() sur l'URL donnée.
-     * Si fetch() lève une TypeError (réseau), bascule automatiquement sur XHR.
-     * @param {string} url
-     */
-    const postJson = async (url) => {
+    * Tente un POST fetch() sur l'URL donnée.
+    * Gère manuellement les redirections pour éviter toute conversion implicite POST -> GET.
+    * @param {string} url
+    * @param {number} redirectCount
+    * @param {object} requestPayload
+    */
+    const postJson = async (url, redirectCount = 0, requestPayload = safePayload) => {
       const controller = new AbortController();
       const timeout    = setTimeout(() => controller.abort(), 25000);
 
       try {
         const response = await fetch(url, {
           method:   'POST',
-          redirect: 'follow', // Suivre les redirections (ex: HTTP→HTTPS)
+          redirect: 'manual',
           signal:   controller.signal,
           headers:  {
             'Content-Type': 'application/json',
             'Accept':       'application/json'
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(requestPayload)
         });
+
+        if (response.status >= 300 && response.status < 400) {
+          if (redirectCount >= 3) {
+            throw new Error('Trop de redirections backend');
+          }
+
+          const locationHeader = response.headers.get('Location');
+          if (!locationHeader) {
+            throw new Error(`Redirection ${response.status} sans en-tête Location`);
+          }
+
+          const redirectedUrl = new URL(locationHeader, url).toString();
+          console.warn(`⚠️ Redirection ${response.status} détectée: ${url} -> ${redirectedUrl}`);
+          return await postJson(redirectedUrl, redirectCount + 1, requestPayload);
+        }
 
         const rawBody = await response.text();
         const data    = parseResponseBody(rawBody);
         return { response, data };
       } catch (fetchError) {
-        // TypeError réseau (CORS bloqué, DNS échoué, etc.) → fallback XHR
-        console.warn('⚠️ fetch a échoué, tentative via XHR:', fetchError?.message || fetchError);
-        return await postJsonViaXHR(url, payload);
+        console.warn('⚠️ fetch a échoué:', fetchError?.message || fetchError);
+        throw fetchError;
       } finally {
         clearTimeout(timeout);
       }
@@ -442,32 +580,32 @@ async function sendSimulation(payload) {
 
     const primaryUrl = `${REVESTA_API_URL}/simulations`;
     let { response, data } = await postJson(primaryUrl);
+    let usedFallbackPayload = false;
 
     if (!response.ok) {
+      console.warn('⚠️ Réponse backend non-OK', {
+        status: response.status,
+        url: response.url,
+        redirected: response.redirected
+      });
+
       const backendMessage    = (data?.message || '').toLowerCase();
-      // Détecter le cas où une redirect HTTP→HTTPS a transformé le POST en GET
-      // (certains serveurs répondent 405 "GET method not supported" après redirect)
       const seemsRedirectMethodLoss = response.status === 405 && backendMessage.includes('get method is not supported');
-
       if (seemsRedirectMethodLoss) {
-        console.warn('⚠️ 405 GET détecté après POST. Tentative fallback URL (HTTPS/slash)...');
+        throw new Error('Le backend répond comme si la requête était en GET. Vérifiez les redirections/proxy (nginx/cdn) de /api/v1/simulations pour conserver POST.');
+      }
 
-        // Essayer les variantes : HTTPS, HTTPS avec slash final
-        const fallbackUrls = [];
-        if (primaryUrl.startsWith('http://')) {
-          fallbackUrls.push(primaryUrl.replace('http://', 'https://'));
-          fallbackUrls.push(`${primaryUrl.replace('http://', 'https://')}/`);
-        }
-        fallbackUrls.push(`${primaryUrl}/`);
+      if (response.status === 500) {
+        console.warn('⚠️ 500 backend détecté. Tentative avec payload minimal sécurisé...');
+        const minimalPayload = buildMinimalSimulationPayload(safePayload);
+        const retryResult = await postJson(primaryUrl, 0, minimalPayload);
+        response = retryResult.response;
+        data = retryResult.data;
+        usedFallbackPayload = true;
 
-        for (const fallbackUrl of fallbackUrls) {
-          const fallbackResult = await postJson(fallbackUrl);
-          response = fallbackResult.response;
-          data     = fallbackResult.data;
-          if (response.ok) {
-            console.log('✅ Simulation envoyée avec succès (fallback):', fallbackUrl, data);
-            return data;
-          }
+        if (response.ok) {
+          console.log('✅ Simulation envoyée avec payload fallback minimal.');
+          return data;
         }
       }
 
@@ -477,6 +615,10 @@ async function sendSimulation(payload) {
       if (response.status === 422) {
         throw new Error(buildValidationErrorMessage(data));
       }
+      if (usedFallbackPayload) {
+        throw new Error(`Échec backend après fallback minimal (${response.status}) : ${data.message || 'Erreur inconnue'}`);
+      }
+
       throw new Error(data.message || `Erreur serveur (${response.status})`);
     }
 
@@ -488,8 +630,7 @@ async function sendSimulation(payload) {
       throw new Error('Le serveur met trop de temps à répondre (timeout).');
     }
     if (error?.name === 'TypeError') {
-      // TypeError réseau (pas abortError) : XHR a aussi échoué, le serveur est inaccessible
-      throw new Error('Erreur réseau/CORS vers le backend. Vérifiez que l\'API est accessible et autorise l\'origine de l\'extension.');
+      throw new Error('Erreur réseau vers le backend (TLS/CORS/DNS). Vérifiez un certificat HTTPS valide pour le domaine API et les host_permissions de l\'extension.');
     }
     throw error;
   }

@@ -60,6 +60,7 @@ function extractLeBonCoinData() {
     };
 
     /** Retourne le prix en euros (sans espaces ni symboles) */
+    const getPrix = () => {
       const priceText =
         document.querySelector('[data-qa-id="adview_price"]')?.textContent ||
         document.querySelector('[data-testid="ad-price"]')?.textContent ||
@@ -69,73 +70,69 @@ function extractLeBonCoinData() {
     };
 
     /** Retourne la chaîne "Ville CodePostal" la plus complète trouvée sur la page */
+    const getLocalisation = () => {
       const topCriteriaLinks = Array.from(document.querySelectorAll('a[href*="#map"]'));
       for (const link of topCriteriaLinks) {
         const linkText = link.textContent.trim();
         const ariaLabel = link.getAttribute('aria-label') || '';
         const location = ariaLabel || linkText;
-        
-        // Vérifier que c'est bien au format "Ville CodePostal"
+
         if (location && /\d{5}/.test(location)) {
           console.log('📍 Localisation extraite (lien #map):', location);
           return location;
         }
       }
-      
-      // PRIORITÉ #2 : Autres sélecteurs de localisation
-      let location = 
+
+      let location =
         document.querySelector('[data-qa-id="adview_location_informations"]')?.textContent?.trim() ||
         document.querySelector('[data-qa-id="adview_location_link"]')?.textContent?.trim() ||
         document.querySelector('[data-testid="ad-location"]')?.textContent?.trim() ||
         document.querySelector('[data-test="location"]')?.textContent?.trim() ||
         '';
-      
-      // Si pas trouvé, chercher dans les critères de l'annonce
+
       if (!location) {
         const criteriaElements = Array.from(document.querySelectorAll('[data-qa-id*="criteria"]'));
-        const villeElement = criteriaElements.find(el => 
-          el.textContent.includes('Ville') || 
+        const villeElement = criteriaElements.find(el =>
+          el.textContent.includes('Ville') ||
           el.textContent.match(/\d{5}/)
         );
         if (villeElement) {
           location = villeElement.textContent.trim();
         }
       }
-      
-      // Dernière tentative : chercher dans tout le body
+
       if (!location) {
         const bodyMatch = document.body.textContent.match(/(\d{5}\s+[\wÀ-ÿ\-]+)/);
         if (bodyMatch) {
           location = bodyMatch[1];
         }
       }
-      
+
       console.log('📍 Localisation extraite:', location);
       return location;
     };
 
     /** Extrait uniquement le nom de la ville (sans le code postal) */
+    const getVille = () => {
       const topCriteriaLinks = Array.from(document.querySelectorAll('a[href*="#map"]'));
       for (const link of topCriteriaLinks) {
         const linkText = link.textContent.trim();
         const ariaLabel = link.getAttribute('aria-label') || '';
         const textToSearch = ariaLabel || linkText;
-        
-        // Format "Ville CodePostal" - extraire la ville
+
         const villeMatch = textToSearch.match(/^([\wÀ-ÿ\-\s]+?)\s+\d{5}$/);
         if (villeMatch) {
           console.log('✅ Ville extraite:', villeMatch[1]);
           return villeMatch[1].trim();
         }
       }
-      
-      // Fallback: extraire depuis localisation
+
       const location = getLocalisation();
       const villeMatch = location.match(/^([\wÀ-ÿ\-\s]+?)\s+\d{5}/);
       if (villeMatch) {
         return villeMatch[1].trim();
       }
-      
+
       return '';
     };
 
@@ -143,26 +140,22 @@ function extractLeBonCoinData() {
      * Extrait le code postal (5 chiffres) en appliquant 6 stratégies successives :
      * lien #map, data-test-id de critères, header localisation, JSON-LD, critère "Ville", fallback.
      */
-      
-      // 1. PRIORITÉ #1 : Lien d'adresse dans data-test-id="adview-top-criteria-atttributes" (le plus fiable)
-      // Cherche un lien <a> contenant "Ville CodePostal" avec href="#map"
+    const getCodePostal = () => {
       const topCriteriaLinks = Array.from(document.querySelectorAll('a[href*="#map"]'));
       for (const link of topCriteriaLinks) {
         const linkText = link.textContent.trim();
         const ariaLabel = link.getAttribute('aria-label') || '';
         const textToSearch = ariaLabel || linkText;
-        
+
         console.log('🔍 Lien adresse trouvé:', textToSearch);
-        
-        // Format "Ville CodePostal" ou "Ville - CodePostal"
+
         const cpMatch = textToSearch.match(/\b(\d{5})\b/);
         if (cpMatch) {
           console.log('✅ Code postal trouvé (lien adresse #map):', cpMatch[1]);
           return cpMatch[1];
         }
       }
-      
-      // 2. Chercher dans data-test-id="adview-top-criteria-atttributes" (sans nécessiter le lien)
+
       const topCriteria = document.querySelector('[data-test-id="adview-top-criteria-atttributes"]');
       if (topCriteria) {
         const text = topCriteria.textContent.trim();
@@ -173,12 +166,11 @@ function extractLeBonCoinData() {
           return cpMatch[1];
         }
       }
-      
-      // 3. Chercher dans le titre/header de localisation
-      const locationHeader = 
+
+      const locationHeader =
         document.querySelector('[data-qa-id="adview_location_informations"]') ||
         document.querySelector('[data-qa-id="adview_location_link"]');
-      
+
       if (locationHeader) {
         const text = locationHeader.textContent.trim();
         console.log('📍 Texte localisation header:', text);
@@ -188,8 +180,7 @@ function extractLeBonCoinData() {
           return cpMatch[1];
         }
       }
-      
-      // 4. Chercher dans les métadonnées structurées JSON-LD
+
       const jsonLd = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
       for (const script of jsonLd) {
         try {
@@ -210,8 +201,7 @@ function extractLeBonCoinData() {
           console.warn('⚠️ Erreur parsing JSON-LD:', e);
         }
       }
-      
-      // 5. Chercher dans les critères "Ville"
+
       const criteriaElements = Array.from(document.querySelectorAll('[data-qa-id*="criteria"]'));
       for (const el of criteriaElements) {
         const text = el.textContent;
@@ -223,8 +213,7 @@ function extractLeBonCoinData() {
           }
         }
       }
-      
-      // 6. Fallback : extraire depuis localisation générale
+
       const location = getLocalisation();
       if (location) {
         const cpMatch = location.match(/\b(\d{5})\b/);
@@ -233,7 +222,7 @@ function extractLeBonCoinData() {
           return cpMatch[1];
         }
       }
-      
+
       console.warn('⚠️ Code postal non trouvé');
       return '';
     };
@@ -242,30 +231,27 @@ function extractLeBonCoinData() {
      * Retourne la valeur DPE (1=A à 7=G) ou null si non renseignée.
      * 3 stratégies : élément energy-criteria, attributs data-qa-id des critères, attributs class/alt.
      */
+    const getDPE = () => {
       const energyCriteria = document.querySelector('[data-test-id="energy-criteria"]');
       if (energyCriteria) {
-        // Le DPE actif a des classes spécifiques (border, h-sz-24, etc.)
         const activeDPE = energyCriteria.querySelector('[class*="border-surface"], [class*="h-sz-24"]');
         if (activeDPE) {
           const lettre = activeDPE.textContent.trim().toUpperCase();
           if (/^[A-G]$/.test(lettre)) {
-            const dpeValue = lettre.charCodeAt(0) - 64; // A=1, B=2, etc.
+            const dpeValue = lettre.charCodeAt(0) - 64;
             console.log(`✅ DPE trouvé (energy-criteria): ${lettre} (${dpeValue})`);
             return dpeValue;
           }
         }
       }
-      
-      // Méthode 2: Chercher dans les critères de l'annonce
+
       const criteriaElements = Array.from(document.querySelectorAll('[data-qa-id*="criteria"]'));
       for (const el of criteriaElements) {
         const text = el.textContent.toLowerCase();
-        
-        // Chercher "Classe énergie" ou "DPE"
+
         if (text.includes('classe énergie') || text.includes('dpe') || text.includes('diagnostic')) {
           console.log('🔍 Critère DPE trouvé:', text);
-          
-          // Extraire la lettre (A, B, C, D, E, F, G)
+
           const dpeMatch = text.match(/\b([A-G])\b/i);
           if (dpeMatch) {
             const lettre = dpeMatch[1].toUpperCase();
@@ -275,8 +261,7 @@ function extractLeBonCoinData() {
           }
         }
       }
-      
-      // Méthode 3: Chercher dans les éléments avec "dpe" dans leur attribut
+
       const dpeElements = Array.from(document.querySelectorAll('[class*="dpe"], [class*="DPE"], [alt*="dpe"], [alt*="DPE"]'));
       for (const el of dpeElements) {
         const text = (el.textContent || el.alt || '').toLowerCase();
@@ -288,7 +273,7 @@ function extractLeBonCoinData() {
           return dpeValue;
         }
       }
-      
+
       console.log('ℹ️ DPE non trouvé sur la page');
       return null;
     };
@@ -297,9 +282,10 @@ function extractLeBonCoinData() {
      * Collecte les URLs d'images de l'annonce (dédupliquées).
      * 4 stratégies successives : galerie/carrousel, srcset, JSON-LD, fallback toutes images.
      */
+    const getImages = () => {
+      const images = [];
       const seen = new Set();
 
-      // Méthode 1 : Carrousel / galerie d'images LeBonCoin
       const galleryImgs = document.querySelectorAll(
         '[data-qa-id="adview_gallery_container"] img, ' +
         '[data-qa-id="adview_spotlight_container"] img, ' +
@@ -317,7 +303,6 @@ function extractLeBonCoinData() {
         }
       });
 
-      // Méthode 2 : srcset (images haute résolution)
       if (images.length === 0) {
         document.querySelectorAll('[class*="gallery"] img, [class*="carousel"] img, picture source').forEach(el => {
           const srcset = el.getAttribute('srcset') || '';
@@ -331,7 +316,6 @@ function extractLeBonCoinData() {
         });
       }
 
-      // Méthode 3 : Données structurées JSON-LD (images fiables)
       document.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
         try {
           const ld = JSON.parse(script.textContent);
@@ -351,12 +335,14 @@ function extractLeBonCoinData() {
               });
             }
           };
-          if (Array.isArray(ld)) ld.forEach(extractFromLd);
-          else extractFromLd(ld);
+          if (Array.isArray(ld)) {
+            ld.forEach(extractFromLd);
+          } else {
+            extractFromLd(ld);
+          }
         } catch (_) {}
       });
 
-      // Méthode 4 : toutes les grosses images de la page (fallback)
       if (images.length === 0) {
         document.querySelectorAll('img').forEach(img => {
           const src = img.src || '';
@@ -373,6 +359,7 @@ function extractLeBonCoinData() {
     };
 
     // ── Assembler l'objet de données final ────────────────────────────────────────
+    const data = {
       site: 'leboncoin',
       titre: getTitre(),
       prix: getPrix(),
@@ -381,7 +368,7 @@ function extractLeBonCoinData() {
       codePostal: getCodePostal(),
       surface: extractNumber(document.body.textContent, /(\d+(?:[.,]\d+)?)\s*m²/i),
       pieces: extractNumber(document.body.textContent, /(\d+)\s*pièces?/i),
-      description: document.body.textContent.substring(0, 500), // Premier 500 chars
+      description: document.body.textContent.substring(0, 500),
       typeLogement: extractPropertyType(),
       dpe: getDPE(),
       etage: extractNumber(document.body.textContent, /(\d+)(?:er|ère|e)?\s*étage/i),

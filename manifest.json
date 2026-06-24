@@ -1,20 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "REVESTA - Assistant Immobilier",
+  "name": "REVESTA - Assistant Immobilier Intelligent",
   "version": "1.0.0",
-  "description": "Trouvez toutes les aides immobilières disponibles pour votre achat ou rénovation directement sur les annonces",
+  "description": "Découvrez les aides immobilières directement sur les annonces LeBonCoin.",
   "permissions": [
     "activeTab",
     "scripting",
-    "storage",
-    "webRequest"
+    "storage"
   ],
   "host_permissions": [
     "https://*.leboncoin.fr/*",
     "https://mesaidesreno.beta.gouv.fr/*",
     "https://geo.api.gouv.fr/*",
-    "http://31.207.38.67/*",
-    "https://31.207.38.67/*"
+    "https://admin.revesta.fr/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -46,8 +44,8 @@
   "options_page": "options.html",
   "web_accessible_resources": [
     {
-      "resources": ["js/injected.js", "email.html"],
-      "matches": ["<all_urls>"]
+      "resources": ["email.html", "email-type.html"],
+      "matches": ["https://www.leboncoin.fr/*"]
     }
   ]
 }
